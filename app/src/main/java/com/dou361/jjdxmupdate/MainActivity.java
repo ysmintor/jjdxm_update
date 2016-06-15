@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.dou361.update.UpdateBuilder;
+import com.dou361.update.callback.UpdateCheckCB;
 import com.dou361.update.model.Update;
 import com.dou361.update.strategy.UpdateStrategy;
 
@@ -45,6 +46,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public boolean isShowDownloadDialog() {
                         return true;
+                    }
+                })
+                .checkCB(new UpdateCheckCB() {
+                    @Override
+                    public void hasUpdate(Update update) {
+
+                    }
+
+                    @Override
+                    public void noUpdate() {
+
+                    }
+
+                    @Override
+                    public void onCheckError(int code, String errorMsg) {
+
+                    }
+
+                    @Override
+                    public void onUserCancel() {
+
                     }
                 })
                 .check(MainActivity.this);

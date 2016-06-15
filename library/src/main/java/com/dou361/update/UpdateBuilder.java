@@ -7,12 +7,11 @@ import com.dou361.update.business.DownloadWorker;
 import com.dou361.update.business.UpdateWorker;
 import com.dou361.update.callback.UpdateCheckCB;
 import com.dou361.update.callback.UpdateDownloadCB;
-import com.dou361.update.creator.ApkFileCreator;
+import com.dou361.update.creator.DefaultFileCreator;
+import com.dou361.update.creator.DefaultNeedDownloadCreator;
+import com.dou361.update.creator.DialogUI;
+import com.dou361.update.model.DataParser;
 import com.dou361.update.strategy.UpdateStrategy;
-import com.dou361.update.creator.DialogCreator;
-import com.dou361.update.creator.DownloadCreator;
-import com.dou361.update.creator.InstallCreator;
-import com.dou361.update.model.UpdateParser;
 
 /**
  * @author Administrator
@@ -23,20 +22,21 @@ public class UpdateBuilder {
     private DownloadWorker downloadWorker;
     private UpdateCheckCB checkCB;
     private UpdateDownloadCB downloadCB;
-    private String url;
+    private String checkUrl;
+    private String onlineUrl;
     private UpdateStrategy strategy;
-    private DialogCreator updateDialogCreator;
-    private InstallCreator installDialogCreator;
-    private DownloadCreator downloadDialogCreator;
-    private UpdateParser jsonParser;
-    private ApkFileCreator fileCreator;
+    private DialogUI dialogUI;
+    private DefaultNeedDownloadCreator downloadDialogCreator;
+    private DataParser parserCheckJson;
+    private DataParser parserOnlineJson;
+    private DefaultFileCreator fileCreator;
 
     public static UpdateBuilder create() {
         return new UpdateBuilder();
     }
 
     public UpdateBuilder url(String url) {
-        this.url = url;
+        this.checkUrl = url;
         return this;
     }
 
@@ -55,33 +55,13 @@ public class UpdateBuilder {
         return this;
     }
 
-    public UpdateBuilder checkCB (UpdateCheckCB checkCB) {
+    public UpdateBuilder checkCB(UpdateCheckCB checkCB) {
         this.checkCB = checkCB;
         return this;
     }
 
-    public UpdateBuilder jsonParser (UpdateParser jsonParser) {
-        this.jsonParser = jsonParser;
-        return this;
-    }
-
-    public UpdateBuilder fileCreator (ApkFileCreator fileCreator) {
+    public UpdateBuilder fileCreator(DefaultFileCreator fileCreator) {
         this.fileCreator = fileCreator;
-        return this;
-    }
-
-    public UpdateBuilder downloadDialogCreator (DownloadCreator downloadDialogCreator) {
-        this.downloadDialogCreator = downloadDialogCreator;
-        return this;
-    }
-
-    public UpdateBuilder installDialogCreator (InstallCreator installDialogCreator) {
-        this.installDialogCreator = installDialogCreator;
-        return this;
-    }
-
-    public UpdateBuilder updateDialogCreator(DialogCreator updateDialogCreator) {
-        this.updateDialogCreator = updateDialogCreator;
         return this;
     }
 
@@ -91,82 +71,90 @@ public class UpdateBuilder {
     }
 
     public void check(Activity activity) {
+        Updater.getInstance().onlineGet(activity, this);
         Updater.getInstance().checkUpdate(activity, this);
     }
 
     public UpdateStrategy getStrategy() {
         if (strategy == null) {
-            strategy = UpdateConfig.getConfig().getStrategy();
+            strategy = UpdateHelper.getInstance().getStrategy();
         }
         return strategy;
     }
 
-    public String getUrl() {
-        if (TextUtils.isEmpty(url)) {
-            url = UpdateConfig.getConfig().getUrl();
+    public String getCheckUrl() {
+        if (TextUtils.isEmpty(checkUrl)) {
+            checkUrl = UpdateHelper.getInstance().getCheckUrl();
         }
-        return url;
+        return checkUrl;
     }
 
-    public DialogCreator getUpdateDialogCreator() {
-        if (updateDialogCreator == null) {
-            updateDialogCreator = UpdateConfig.getConfig().getUpdateDialogCreator();
+    public String getOnlineUrl() {
+        if (TextUtils.isEmpty(onlineUrl)) {
+            onlineUrl = UpdateHelper.getInstance().getOnlineUrl();
         }
-        return updateDialogCreator;
+        return onlineUrl;
     }
 
-    public InstallCreator getInstallDialogCreator() {
-        if (installDialogCreator == null) {
-            installDialogCreator = UpdateConfig.getConfig().getInstallDialogCreator();
+    public DialogUI getDialogUI() {
+        if (dialogUI == null) {
+            dialogUI = UpdateHelper.getInstance().getDialogUI();
         }
-        return installDialogCreator;
+        return dialogUI;
     }
 
-    public DownloadCreator getDownloadDialogCreator() {
+    public DefaultNeedDownloadCreator getDownloadDialogCreator() {
         if (downloadDialogCreator == null) {
-            downloadDialogCreator = UpdateConfig.getConfig().getDownloadDialogCreator();
+            downloadDialogCreator = UpdateHelper.getInstance().getDownloadDialogCreator();
         }
         return downloadDialogCreator;
     }
 
-    public UpdateParser getJsonParser() {
-        if (jsonParser == null) {
-            jsonParser = UpdateConfig.getConfig().getJsonParser();
+    public DataParser parserCheckJson() {
+        if (parserCheckJson == null) {
+            parserCheckJson = UpdateHelper.getInstance().parserCheckJson();
         }
-        return jsonParser;
+        return parserCheckJson;
+    }
+
+    public DataParser parserOnlineJson() {
+        if (parserOnlineJson == null) {
+            parserOnlineJson = UpdateHelper.getInstance().parserOnlineJson();
+        }
+        return parserOnlineJson;
     }
 
     public UpdateWorker getCheckWorker() {
         if (checkWorker == null) {
-            checkWorker = UpdateConfig.getConfig().getCheckWorker();
+            checkWorker = UpdateHelper.getInstance().getCheckWorker();
         }
         return checkWorker;
     }
 
     public DownloadWorker getDownloadWorker() {
         if (downloadWorker == null) {
-            downloadWorker = UpdateConfig.getConfig().getDownloadWorker();
+            downloadWorker = UpdateHelper.getInstance().getDownloadWorker();
         }
         return downloadWorker;
     }
 
-    public ApkFileCreator getFileCreator() {
+    public DefaultFileCreator getFileCreator() {
         if (fileCreator == null) {
-            fileCreator = UpdateConfig.getConfig().getFileCreator();
+            fileCreator = UpdateHelper.getInstance().getFileCreator();
         }
         return fileCreator;
     }
 
     public UpdateCheckCB getCheckCB() {
         if (checkCB == null) {
-            checkCB = UpdateConfig.getConfig().getCheckCB();
+            checkCB = UpdateHelper.getInstance().getCheckCB();
         }
         return checkCB;
     }
 
     public UpdateDownloadCB getDownloadCB() {
         if (downloadCB == null) {
-            downloadCB = UpdateConfig.getConfig().getDownloadCB();
+            downloadCB = UpdateHelper.getInstance().getDownloadCB();
         }
         return downloadCB;
     }

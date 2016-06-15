@@ -1,9 +1,9 @@
 package com.dou361.update.business;
 
-import com.dou361.update.UpdateConfig;
+import com.dou361.update.UpdateHelper;
 import com.dou361.update.callback.UpdateCheckCB;
 import com.dou361.update.model.Update;
-import com.dou361.update.model.UpdateParser;
+import com.dou361.update.model.DataParser;
 import com.dou361.update.util.HandlerUtil;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.UpdateSP;
@@ -15,7 +15,7 @@ public abstract class UpdateWorker implements Runnable{
 
     protected String url;
     protected UpdateCheckCB checkCB;
-    protected UpdateParser parser;
+    protected DataParser parser;
 
     public void setUrl(String url) {
         this.url = url;
@@ -25,7 +25,7 @@ public abstract class UpdateWorker implements Runnable{
         this.checkCB = checkCB;
     }
 
-    public void setParser(UpdateParser parser) {
+    public void setParser(DataParser parser) {
         this.parser = parser;
     }
 
@@ -37,7 +37,7 @@ public abstract class UpdateWorker implements Runnable{
             if (parse == null) {
                 throw new IllegalArgumentException("parse response to update failed by " + parser.getClass().getCanonicalName());
             }
-            int curVersion = InstallUtil.getApkVersion(UpdateConfig.getConfig().getContext());
+            int curVersion = InstallUtil.getApkVersion(UpdateHelper.getInstance().getContext());
             if (parse.getVersionCode() > curVersion && !UpdateSP.isIgnore(parse.getVersionCode()+"")) {
                 sendHasUpdate(parse);
             } else {

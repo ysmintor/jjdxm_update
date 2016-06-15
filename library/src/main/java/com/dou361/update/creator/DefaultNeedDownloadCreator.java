@@ -1,25 +1,34 @@
 package com.dou361.update.creator;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 
 import com.dou361.update.callback.UpdateDownloadCB;
 import com.dou361.update.model.Update;
 import com.dou361.update.util.SafeDialogOper;
+import com.dou361.update.util.UpdateSP;
 
 import java.io.File;
 
 /**
  * @author Administrator
  */
-public class DefaultNeedDownloadCreator implements DownloadCreator {
-    @Override
-    public UpdateDownloadCB create(Update update,Activity activity) {
+public class DefaultNeedDownloadCreator {
+
+    private NotificationManager notificationManager;
+    private NotificationCompat.Builder ntfBuilder;
+
+    public UpdateDownloadCB create(Update update, Activity activity) {
         final ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setMax(100);
         dialog.setProgress(0);
-        if (update.isForced()) {
+        if (UpdateSP.isForced()) {
             dialog.setCancelable(false);
             dialog.setCanceledOnTouchOutside(false);
         }
@@ -46,5 +55,34 @@ public class DefaultNeedDownloadCreator implements DownloadCreator {
             }
         };
         return downloadCB;
+    }
+
+    /**
+     * 通知栏弹出下载提示进度
+     * @param progress
+     */
+    private void showDownloadNotificationUI(String appName, Activity activity,
+                                            final int progress) {
+        if (activity != null) {
+            String contentText = new StringBuffer().append(progress)
+                    .append("%").toString();
+            PendingIntent contentIntent = PendingIntent.getActivity(activity,
+                    0, new Intent(), PendingIntent.FLAG_CANCEL_CURRENT);
+            if (notificationManager == null) {
+                notificationManager = (NotificationManager) activity
+                        .getSystemService(Context.NOTIFICATION_SERVICE);
+            }
+            if (ntfBuilder == null) {
+                ntfBuilder = new NotificationCompat.Builder(activity)
+                        .setSmallIcon(activity.getApplicationInfo().icon)
+                        .setTicker("开始下载...")
+                        .setContentTitle(appName)
+                        .setContentIntent(contentIntent);
+            }
+            ntfBuilder.setContentText(contentText);
+            ntfBuilder.setProgress(100, progress, false);
+            notificationManager.notify(1,
+                    ntfBuilder.build());
+        }
     }
 }

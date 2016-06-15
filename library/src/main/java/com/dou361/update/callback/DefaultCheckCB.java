@@ -5,9 +5,10 @@ import android.app.Dialog;
 
 import com.dou361.update.UpdateBuilder;
 import com.dou361.update.Updater;
-import com.dou361.update.creator.DialogCreator;
+import com.dou361.update.creator.DialogUI;
 import com.dou361.update.model.Update;
 import com.dou361.update.util.SafeDialogOper;
+import com.dou361.update.util.UpdateSP;
 
 import java.lang.ref.WeakReference;
 
@@ -24,7 +25,7 @@ public class DefaultCheckCB implements UpdateCheckCB {
         this.actRef = new WeakReference<>(context);
     }
 
-    public void setBuilder (UpdateBuilder builder) {
+    public void setBuilder(UpdateBuilder builder) {
         this.builder = builder;
         checkCB = builder.getCheckCB();
     }
@@ -36,16 +37,16 @@ public class DefaultCheckCB implements UpdateCheckCB {
         }
 
         if (!builder.getStrategy().isShowUpdateDialog(update)) {
-            Updater.getInstance().downUpdate(actRef.get(),update,builder);
+            Updater.getInstance().downUpdate(actRef.get(), update, builder);
             return;
         }
 
-        DialogCreator creator = builder.getUpdateDialogCreator();
+        DialogUI creator = builder.getDialogUI();
         creator.setBuilder(builder);
         creator.setCheckCB(this);
-        Dialog dialog = creator.create(update,actRef.get());
+        Dialog dialog = creator.create(0, update, null, actRef.get());
 
-        if (update.isForced()) {
+        if (UpdateSP.isForced()) {
             dialog.setCanceledOnTouchOutside(false);
             dialog.setCancelable(false);
         }
@@ -62,7 +63,7 @@ public class DefaultCheckCB implements UpdateCheckCB {
     @Override
     public void onCheckError(int code, String errorMsg) {
         if (checkCB != null) {
-            checkCB.onCheckError(code,errorMsg);
+            checkCB.onCheckError(code, errorMsg);
         }
     }
 

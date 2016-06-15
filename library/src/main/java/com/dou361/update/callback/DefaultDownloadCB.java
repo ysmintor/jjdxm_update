@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.app.Dialog;
 
 import com.dou361.update.UpdateBuilder;
-import com.dou361.update.UpdateConfig;
-import com.dou361.update.creator.InstallCreator;
+import com.dou361.update.UpdateHelper;
+import com.dou361.update.creator.DialogUI;
 import com.dou361.update.model.Update;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.SafeDialogOper;
@@ -54,7 +54,7 @@ public class DefaultDownloadCB implements UpdateDownloadCB {
 
     public UpdateDownloadCB getInnerCB() {
         if (innerCB == null && builder.getStrategy().isShowDownloadDialog()) {
-            innerCB = builder.getDownloadDialogCreator().create(update,actRef.get());
+            innerCB = builder.getDownloadDialogCreator().create(update, actRef.get());
         }
         return innerCB;
     }
@@ -70,34 +70,34 @@ public class DefaultDownloadCB implements UpdateDownloadCB {
         }
 
         if (builder.getStrategy().isShowInstallDialog()) {
-            InstallCreator creator = builder.getInstallDialogCreator();
+            DialogUI creator = builder.getDialogUI();
             creator.setCheckCB(builder.getCheckCB());
-            Dialog dialog = creator.create(update, file.getAbsolutePath(),actRef.get());
+            Dialog dialog = creator.create(1, update, file.getAbsolutePath(), actRef.get());
             SafeDialogOper.safeShowDialog(dialog);
-        }else if (builder.getStrategy().isAutoInstall()) {
-            InstallUtil.installApk(UpdateConfig.getConfig().getContext(),file.getAbsolutePath());
+        } else if (builder.getStrategy().isAutoInstall()) {
+            InstallUtil.installApk(UpdateHelper.getInstance().getContext(), file.getAbsolutePath());
         }
     }
 
     @Override
-    public void onUpdateProgress(long current,long total) {
+    public void onUpdateProgress(long current, long total) {
         if (downloadCB != null) {
-            downloadCB.onUpdateProgress(current,total);
+            downloadCB.onUpdateProgress(current, total);
         }
 
         if (getInnerCB() != null) {
-            innerCB.onUpdateProgress(current,total);
+            innerCB.onUpdateProgress(current, total);
         }
     }
 
     @Override
-    public void onUpdateError(int code,String errorMsg) {
+    public void onUpdateError(int code, String errorMsg) {
         if (downloadCB != null) {
-            downloadCB.onUpdateError(code,errorMsg);
+            downloadCB.onUpdateError(code, errorMsg);
         }
 
         if (getInnerCB() != null) {
-            innerCB.onUpdateError(code,errorMsg);
+            innerCB.onUpdateError(code, errorMsg);
         }
     }
 }

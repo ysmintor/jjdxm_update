@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.dou361.update.UpdateConfig;
+import com.dou361.update.UpdateHelper;
 
 /**
  * @author Administrator
@@ -33,7 +33,7 @@ public class NetworkUtil {
     }
 
     static NetworkInfo getNetworkInfos() {
-        Context context = UpdateConfig.getConfig().getContext();
+        Context context = UpdateHelper.getInstance().getContext();
         ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return connManager.getActiveNetworkInfo();
     }

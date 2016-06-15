@@ -8,23 +8,14 @@ public class Update {
      * original data.
      */
     private String original;
-
-    /**
-     * indicated whether or not to force update,update dialog should not be disable by back key or touch outside if set true
-     */
-    private boolean forced;
     /**
      * update content,
      */
     private String updateContent;
     /**
-     * update url
+     * update checkUrl
      */
     private String updateUrl;
-    /**
-     * update time
-     */
-    private long updateTime;
     /**
      * update code
      */
@@ -33,17 +24,14 @@ public class Update {
      * update name
      */
     private String versionName;
+    private long apkSize;
 
-    public Update(String original) {
+    public String getOriginal() {
+        return original;
+    }
+
+    public void setOriginal(String original) {
         this.original = original;
-    }
-
-    public boolean isForced() {
-        return forced;
-    }
-
-    public void setForced(boolean forced) {
-        this.forced = forced;
     }
 
     public String getUpdateContent() {
@@ -62,14 +50,6 @@ public class Update {
         this.updateUrl = updateUrl;
     }
 
-    public long getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(long updateTime) {
-        this.updateTime = updateTime;
-    }
-
     public int getVersionCode() {
         return versionCode;
     }
@@ -86,21 +66,11 @@ public class Update {
         this.versionName = versionName;
     }
 
-    public String getOriginal() {
-        return original;
+    public long getApkSize() {
+        return apkSize;
     }
 
-    @Override
-    public String toString() {
-        return "Update{" +
-                "original='" + original + '\'' +
-                ", forced=" + forced +
-                ", updateContent='" + updateContent + '\'' +
-                ", updateUrl='" + updateUrl + '\'' +
-                ", updateTime=" + updateTime +
-                ", versionCode=" + versionCode +
-                ", versionName='" + versionName + '\'' +
-                ", ignore=" +
-                '}';
+    public void setApkSize(long apkSize) {
+        this.apkSize = apkSize;
     }
 }

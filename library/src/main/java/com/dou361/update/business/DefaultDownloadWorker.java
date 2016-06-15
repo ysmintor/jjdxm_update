@@ -1,10 +1,7 @@
 package com.dou361.update.business;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import com.dou361.update.UpdateConfig;
 import com.dou361.update.util.UpdateSP;
 
 import java.io.File;
