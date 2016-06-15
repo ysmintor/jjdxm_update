@@ -1,5 +1,5 @@
 
-# [jjdxmupdate][project] #
+# [jjdxm_update][project] #
 ## Introduction ##
 应用内更新，实现类似友盟自动更新sdk的更新模式，用户使用前只需要配置自己的服务器更新检查接口即可（必须接口），也可以拓展加入一个接口作为在线参数配置来实现（可选接口）可实现以下三种方式更新：
 ### 1.自动检测更新、手动检测更新 ###
@@ -14,9 +14,9 @@
 ### 3.参数结构返回回到让用户自定义解析 ###
 ## Screenshots ##
 
-<img src="https://raw.githubusercontent.com/jjdxmashl/jjdxmupdate/master/screenshots/icon01.png" width="300"> 
-<img src="https://raw.githubusercontent.com/jjdxmashl/jjdxmupdate/master/screenshots/icon02.png" width="300"> 
-<img src="https://raw.githubusercontent.com/jjdxmashl/jjdxmupdate/master/screenshots/icon03.png" width="300">
+<img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon01.png" width="300"> 
+<img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon02.png" width="300"> 
+<img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon03.png" width="300">
 
 ## Get Started ##
 
@@ -96,8 +96,8 @@ If you find any bug when using project, please report [here][issues]. Thanks for
 
 [web]:http://www.dou361.com
 [github]:https://github.com/jjdxmashl/
-[project]:https://github.com/jjdxmashl/jjdxmupdate/
-[issues]:https://github.com/jjdxmashl/jjdxmupdate/issues/new
-[downapk]:https://raw.githubusercontent.com/jjdxmashl/jjdxmupdate/master/apk/app-debug.apk
-[icon01]:https://raw.githubusercontent.com/jjdxmashl/jjdxmupdate/master/screenshots/icon01.png
-[icon02]:https://raw.githubusercontent.com/jjdxmashl/jjdxmupdate/master/screenshots/icon02.png
+[project]:https://github.com/jjdxmashl/jjdxm_update/
+[issues]:https://github.com/jjdxmashl/jjdxm_update/issues/new
+[downapk]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/apk/app-debug.apk
+[icon01]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon01.png
+[icon02]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon02.png

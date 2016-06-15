@@ -1,4 +1,4 @@
-package com.dou361.jjdxmupdate;
+package com.dou361.jjdxm_update;
 
 import android.app.Application;
 
