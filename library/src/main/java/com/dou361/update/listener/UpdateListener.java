@@ -1,11 +1,11 @@
-package com.dou361.update.callback;
+package com.dou361.update.listener;
 
-import com.dou361.update.model.Update;
+import com.dou361.update.bean.Update;
 
 /**
  * The update check callback
  */
-public interface UpdateCheckCB {
+public interface UpdateListener {
 
     /**
      * There are a new version of APK on network

@@ -1,11 +1,11 @@
-package com.dou361.update.callback;
+package com.dou361.update.listener;
 
 import java.io.File;
 
 /**
  * @author Administrator
  */
-public interface UpdateDownloadCB {
+public interface DownloadListener {
 
     void onUpdateStart();
 

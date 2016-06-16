@@ -5,10 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.dou361.update.UpdateBuilder;
-import com.dou361.update.callback.UpdateCheckCB;
-import com.dou361.update.model.Update;
-import com.dou361.update.strategy.UpdateStrategy;
+import com.dou361.update.UpdateHelper;
+import com.dou361.update.UpdateStrategy;
+import com.dou361.update.bean.Update;
+import com.dou361.update.listener.UpdateListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         // UpdateBuilder中可设置的配置与UpdateConfig中一致。检查更新入口调用check方法
         // 对于UpdateBuilder中未设置的参数。会默认使用UpdateConfig中的配置
-        UpdateBuilder.create()
+        UpdateHelper.getInstance()
                 .strategy(new UpdateStrategy() {
                     @Override
                     public boolean isShowUpdateDialog(Update update) {
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         return true;
                     }
                 })
-                .checkCB(new UpdateCheckCB() {
+                .setUpdateListener(new UpdateListener() {
                     @Override
                     public void hasUpdate(Update update) {
 

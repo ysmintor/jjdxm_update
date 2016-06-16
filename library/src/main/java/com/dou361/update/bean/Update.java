@@ -1,4 +1,4 @@
-package com.dou361.update.model;
+package com.dou361.update.bean;
 
 /**
  */

@@ -1,4 +1,4 @@
-package com.dou361.update.business;
+package com.dou361.update.http;
 
 /**
  * @author Administrator

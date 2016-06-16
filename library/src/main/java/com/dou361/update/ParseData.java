@@ -1,4 +1,4 @@
-package com.dou361.update.model;
+package com.dou361.update;
 
 /**
  * ========================================
@@ -20,7 +20,6 @@ package com.dou361.update.model;
  * <p/>
  * ========================================
  */
-public interface DataParser {
-
-    <T extends Update> T parse(String httpResponse);
+public interface ParseData {
+    <T> T parse(String httpResponse);
 }

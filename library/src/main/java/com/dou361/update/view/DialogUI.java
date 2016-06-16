@@ -1,4 +1,4 @@
-package com.dou361.update.creator;
+package com.dou361.update.view;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,10 +11,9 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.dou361.update.R;
-import com.dou361.update.UpdateBuilder;
 import com.dou361.update.Updater;
-import com.dou361.update.callback.UpdateCheckCB;
-import com.dou361.update.model.Update;
+import com.dou361.update.bean.Update;
+import com.dou361.update.listener.UpdateListener;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.NetworkUtil;
 import com.dou361.update.util.SafeDialogOper;
@@ -24,22 +23,22 @@ import java.math.BigDecimal;
 
 /**
  * ========================================
- * <p>
+ * <p/>
  * 版 权：dou361.com 版权所有 （C） 2015
- * <p>
+ * <p/>
  * 作 者：陈冠明
- * <p>
+ * <p/>
  * 个人网站：http://www.dou361.com
- * <p>
+ * <p/>
  * 版 本：1.0
- * <p>
+ * <p/>
  * 创建日期：2016/6/15
- * <p>
+ * <p/>
  * 描 述：
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * 修订历史：
- * <p>
+ * <p/>
  * ========================================
  */
 public class DialogUI implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
@@ -54,24 +53,19 @@ public class DialogUI implements CompoundButton.OnCheckedChangeListener, View.On
     private Activity mActivity;
     private Update mUpdate;
 
-    private UpdateBuilder builder;
-    private UpdateCheckCB checkCB;
+    private UpdateListener checkCB;
     private String mPath;
     /**
      * 默认为新版本提示0,1为安装提示
      */
     private int mAction;
 
-    public void setBuilder(UpdateBuilder builder) {
-        this.builder = builder;
-    }
-
-    public void setCheckCB(UpdateCheckCB checkCB) {
+    public void setCheckCB(UpdateListener checkCB) {
         this.checkCB = checkCB;
     }
 
     public void sendDownloadRequest(Update update, Activity activity) {
-        Updater.getInstance().downUpdate(activity, update, builder);
+        Updater.getInstance().downUpdate(activity, update);
     }
 
     public void sendUserCancel() {

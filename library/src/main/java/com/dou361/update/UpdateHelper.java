@@ -1,102 +1,76 @@
 package com.dou361.update;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.dou361.update.business.DefaultDownloadWorker;
-import com.dou361.update.business.DefaultUpdateWorker;
-import com.dou361.update.business.DownloadWorker;
-import com.dou361.update.business.UpdateWorker;
-import com.dou361.update.callback.UpdateCheckCB;
-import com.dou361.update.callback.UpdateDownloadCB;
-import com.dou361.update.creator.DefaultFileCreator;
-import com.dou361.update.creator.DefaultNeedDownloadCreator;
-import com.dou361.update.creator.DialogUI;
-import com.dou361.update.model.DataParser;
-import com.dou361.update.strategy.UpdateStrategy;
-import com.dou361.update.strategy.WifiFirstStrategy;
+import com.dou361.update.bean.Update;
+import com.dou361.update.listener.DownloadListener;
+import com.dou361.update.listener.UpdateListener;
+import com.dou361.update.util.NetworkUtil;
+import com.dou361.update.view.DialogDownloadUI;
+import com.dou361.update.view.DialogUI;
 
 /**
  */
 public class UpdateHelper {
 
-    private Context context;
-    private UpdateWorker checkWorker;
-    private DownloadWorker downloadWorker;
-    private UpdateCheckCB checkCB;
-    private UpdateDownloadCB downloadCB;
+    private Context mContext;
     private String checkUrl;
     private String onlineUrl;
     private UpdateStrategy strategy;
     private DialogUI dialogUI;
-    private DefaultNeedDownloadCreator downloadDialogCreator;
-    private DataParser parserCheckJson;
-    private DataParser parserOnlineJson;
-    private DefaultFileCreator fileCreator;
+    private DialogDownloadUI dialogDownloadUI;
+    private ParseData parserCheckJson;
+    private ParseData parserOnlineJson;
 
-    private static UpdateHelper config;
+    private static UpdateHelper instance;
+    private UpdateListener mUpdateListener;
+    private DownloadListener mDownloadListener;
 
     public static UpdateHelper getInstance() {
-        if (config == null) {
-            config = new UpdateHelper();
+        if (instance == null) {
+            throw new RuntimeException("UpdateHelper not initialized!");
+        } else {
+            return instance;
         }
-        return config;
     }
 
-    UpdateHelper context(Context context) {
-        if (this.context == null) {
-            this.context = context.getApplicationContext();
-        }
-        return this;
+    public static void init(Context appContext) {
+        instance = new UpdateHelper(appContext);
     }
 
-    public UpdateHelper checkUrl(String url) {
+    public UpdateHelper(Context context) {
+        this.mContext = context;
+    }
+
+    public UpdateHelper setCheckUrl(String url) {
         this.checkUrl = url;
         return this;
     }
 
-    public UpdateHelper onlineUrl(String url) {
+    public UpdateHelper setOnlineUrl(String url) {
         this.onlineUrl = url;
         return this;
     }
 
-    public UpdateHelper checkWorker(UpdateWorker checkWorker) {
-        this.checkWorker = checkWorker;
+    public UpdateHelper setUpdateListener(UpdateListener listener) {
+        this.mUpdateListener = listener;
         return this;
     }
 
-    public UpdateHelper downloadWorker(DownloadWorker downloadWorker) {
-        this.downloadWorker = downloadWorker;
+    public UpdateHelper setDownListener(DownloadListener listener) {
+        this.mDownloadListener = listener;
         return this;
     }
 
-    public UpdateHelper downloadCB(UpdateDownloadCB downloadCB) {
-        this.downloadCB = downloadCB;
-        return this;
-    }
-
-    public UpdateHelper checkCB(UpdateCheckCB checkCB) {
-        this.checkCB = checkCB;
-        return this;
-    }
-
-    public UpdateHelper parserCheckJson(DataParser jsonParser) {
+    public UpdateHelper setCheckJsonParser(ParseData jsonParser) {
         this.parserCheckJson = jsonParser;
         return this;
     }
 
-    public UpdateHelper parserOnlineJson(DataParser jsonParser) {
+    public UpdateHelper setOnlineJsonParser(ParseData jsonParser) {
         this.parserOnlineJson = jsonParser;
-        return this;
-    }
-
-    public UpdateHelper fileCreator(DefaultFileCreator fileCreator) {
-        this.fileCreator = fileCreator;
-        return this;
-    }
-
-    public UpdateHelper downloadDialogCreator(DefaultNeedDownloadCreator downloadDialogCreator) {
-        this.downloadDialogCreator = downloadDialogCreator;
         return this;
     }
 
@@ -106,15 +80,47 @@ public class UpdateHelper {
     }
 
     public Context getContext() {
-        if (context == null) {
+        if (mContext == null) {
             throw new RuntimeException("should call UpdateConfig.install first");
         }
-        return context;
+        return mContext;
     }
 
     public UpdateStrategy getStrategy() {
         if (strategy == null) {
-            strategy = new WifiFirstStrategy();
+            strategy = new UpdateStrategy() {
+                boolean isWifi;
+
+                @Override
+                public boolean isShowUpdateDialog(Update update) {
+                    isWifi = NetworkUtil.isConnectedByWifi();
+                    if (isWifi) {
+                        return false;
+                    }
+                    return true;
+                }
+
+                @Override
+                public boolean isAutoInstall() {
+                    return false;
+                }
+
+                @Override
+                public boolean isShowInstallDialog() {
+                    if (isWifi) {
+                        return true;
+                    }
+                    return false;
+                }
+
+                @Override
+                public boolean isShowDownloadDialog() {
+                    if (isWifi) {
+                        return false;
+                    }
+                    return true;
+                }
+            };
         }
         return strategy;
     }
@@ -137,50 +143,34 @@ public class UpdateHelper {
         return dialogUI;
     }
 
-    public DefaultNeedDownloadCreator getDownloadDialogCreator() {
-        if (downloadDialogCreator == null) {
-            downloadDialogCreator = new DefaultNeedDownloadCreator();
+    public DialogDownloadUI getDialogDownloadUI() {
+        if (dialogDownloadUI == null) {
+            dialogDownloadUI = new DialogDownloadUI();
         }
-        return downloadDialogCreator;
+        return dialogDownloadUI;
     }
 
-    public DataParser parserCheckJson() {
+    public ParseData getCheckJsonParser() {
         if (parserCheckJson == null) {
             throw new IllegalStateException("update parser is null");
         }
         return parserCheckJson;
     }
 
-    public DataParser parserOnlineJson() {
+    public ParseData getOnlineJsonParser() {
         return parserOnlineJson;
     }
 
-    public UpdateWorker getCheckWorker() {
-        if (checkWorker == null) {
-            checkWorker = new DefaultUpdateWorker();
-        }
-        return checkWorker;
+
+    public void check(Activity activity) {
+        Updater.getInstance().checkUpdate(activity);
     }
 
-    public DownloadWorker getDownloadWorker() {
-        if (downloadWorker == null) {
-            downloadWorker = new DefaultDownloadWorker();
-        }
-        return downloadWorker;
+    public UpdateListener getUpdateListener() {
+        return mUpdateListener;
     }
 
-    public DefaultFileCreator getFileCreator() {
-        if (fileCreator == null) {
-            fileCreator = new DefaultFileCreator();
-        }
-        return fileCreator;
-    }
-
-    public UpdateCheckCB getCheckCB() {
-        return checkCB;
-    }
-
-    public UpdateDownloadCB getDownloadCB() {
-        return downloadCB;
+    public DownloadListener getDownloadListener() {
+        return mDownloadListener;
     }
 }

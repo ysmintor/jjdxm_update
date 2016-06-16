@@ -1,4 +1,4 @@
-package com.dou361.update.business;
+package com.dou361.update.http;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
