@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 
 import com.dou361.update.bean.Update;
-import com.dou361.update.util.SafeDialogOper;
+import com.dou361.update.util.DialogSafeOperator;
 import com.dou361.update.util.UpdateSP;
 
 /**
@@ -22,7 +22,7 @@ public class DialogDownloadUI {
             dialog.setCancelable(false);
             dialog.setCanceledOnTouchOutside(false);
         }
-        SafeDialogOper.safeShowDialog(dialog);
+        DialogSafeOperator.safeShowDialog(dialog);
         return dialog;
     }
 }

@@ -1,8 +1,10 @@
 package com.dou361.update.bean;
 
+import java.io.Serializable;
+
 /**
  */
-public class Update {
+public class Update implements Serializable {
 
     /**
      * original data.

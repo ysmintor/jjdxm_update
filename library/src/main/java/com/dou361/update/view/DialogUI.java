@@ -3,6 +3,7 @@ package com.dou361.update.view;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -11,34 +12,34 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.dou361.update.R;
-import com.dou361.update.Updater;
 import com.dou361.update.bean.Update;
 import com.dou361.update.listener.UpdateListener;
+import com.dou361.update.server.DownloadingService;
+import com.dou361.update.util.DialogSafeOperator;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.NetworkUtil;
-import com.dou361.update.util.SafeDialogOper;
 import com.dou361.update.util.UpdateSP;
 
 import java.math.BigDecimal;
 
 /**
  * ========================================
- * <p/>
+ * <p>
  * 版 权：dou361.com 版权所有 （C） 2015
- * <p/>
+ * <p>
  * 作 者：陈冠明
- * <p/>
+ * <p>
  * 个人网站：http://www.dou361.com
- * <p/>
+ * <p>
  * 版 本：1.0
- * <p/>
+ * <p>
  * 创建日期：2016/6/15
- * <p/>
+ * <p>
  * 描 述：
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * 修订历史：
- * <p/>
+ * <p>
  * ========================================
  */
 public class DialogUI implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
@@ -65,7 +66,9 @@ public class DialogUI implements CompoundButton.OnCheckedChangeListener, View.On
     }
 
     public void sendDownloadRequest(Update update, Activity activity) {
-        Updater.getInstance().downUpdate(activity, update);
+        Intent intent = new Intent(activity, DownloadingService.class);
+        intent.putExtra("update", update);
+        activity.startService(intent);
     }
 
     public void sendUserCancel() {
@@ -82,7 +85,7 @@ public class DialogUI implements CompoundButton.OnCheckedChangeListener, View.On
         String updateContent = null;
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
-        View view = inflater.inflate(R.layout.umeng_update_dialog, null);
+        View view = inflater.inflate(R.layout.jjdxm_update_dialog, null);
         jjdxm_update_wifi_indicator = view.findViewById(R.id.jjdxm_update_wifi_indicator);
         jjdxm_update_content = (TextView) view.findViewById(R.id.jjdxm_update_content);
         jjdxm_update_id_check = (CheckBox) view.findViewById(R.id.jjdxm_update_id_check);
@@ -165,24 +168,24 @@ public class DialogUI implements CompoundButton.OnCheckedChangeListener, View.On
         if (id == R.id.jjdxm_update_id_ok) {
             if (mAction == 0) {
                 sendDownloadRequest(mUpdate, mActivity);
-                SafeDialogOper.safeDismissDialog(dialog);
+                DialogSafeOperator.safeDismissDialog(dialog);
             } else {
-                SafeDialogOper.safeDismissDialog(dialog);
+                DialogSafeOperator.safeDismissDialog(dialog);
                 InstallUtil.installApk(mActivity, mPath);
             }
         } else if (id == R.id.jjdxm_update_id_cancel) {
             if (UpdateSP.isForced()) {
                 sendUserCancel();
-                SafeDialogOper.safeDismissDialog(dialog);
+                DialogSafeOperator.safeDismissDialog(dialog);
                 mActivity.finish();
             } else {
                 sendUserCancel();
-                SafeDialogOper.safeDismissDialog(dialog);
+                DialogSafeOperator.safeDismissDialog(dialog);
             }
         } else if (id == R.id.jjdxm_update_id_ignore) {
             UpdateSP.setIgnore(mUpdate.getVersionCode() + "");
             sendUserCancel();
-            SafeDialogOper.safeDismissDialog(dialog);
+            DialogSafeOperator.safeDismissDialog(dialog);
         }
     }
 

@@ -9,7 +9,7 @@ import android.view.ContextThemeWrapper;
 /**
  * @author Administrator
  */
-public class SafeDialogOper {
+public class DialogSafeOperator {
 
     public static void safeShowDialog(DialogFragment dialog, Activity activity, String tag) {
         if (activity == null || activity.isFinishing()) {

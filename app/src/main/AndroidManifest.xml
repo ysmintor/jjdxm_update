@@ -3,11 +3,11 @@
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
+        android:name="com.dou361.jjdxm_update.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:name="com.dou361.jjdxm_update.BaseApplication"
         android:theme="@style/AppTheme">
         <activity android:name="com.dou361.jjdxm_update.MainActivity">
             <intent-filter>
@@ -16,6 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <service android:name="com.dou361.update.server.DownloadingService"/>
     </application>
 
 </manifest>
