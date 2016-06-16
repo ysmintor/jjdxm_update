@@ -61,7 +61,7 @@ public class DialogUI implements CompoundButton.OnCheckedChangeListener, View.On
      */
     private int mAction;
 
-    public void setCheckCB(UpdateListener checkCB) {
+    public void setUpdateListener(UpdateListener checkCB) {
         this.checkCB = checkCB;
     }
 
