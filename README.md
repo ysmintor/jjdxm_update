@@ -114,9 +114,59 @@
                 })
                 .check(MainActivity.this);
 
+4.几种方式的调用
+
+	//有网更新
+	UpdateHelper.UpdateType.checkupdate,
+	//自动更新
+    UpdateHelper.UpdateType.autoupdate,
+	//只有WiFi更新
+    UpdateHelper.UpdateType.autowifiupdate,
+	//只有WiFi下载
+    UpdateHelper.UpdateType.autowifidown
+
+调用方式这里只举例静默更新，其他方式类似
+
+	/静默更新
+	UpdateBuilder.create()
+				.setUpdateType(UpdateHelper.UpdateType.autowifidown)
+                .check(MainActivity.this);
+
+5.更新监听回调UpdateListener，主要有四个方法
+
+	/**
+     * There are a new version of APK on network
+     */
+    public void hasUpdate(Update update) {
+
+    }
+
+    /**
+     * There are no new version for update
+     */
+    public abstract void noUpdate();
+
+    /**
+     * http check error,
+     *
+     * @param code     http code
+     * @param errorMsg http error msg
+     */
+    public abstract void onCheckError(int code, String errorMsg);
+
+    /**
+     * to be invoked by user press cancel button.
+     */
+    public void onUserCancel() {
+
+    }
+
+
 ## More Actions ##
 
 ## ChangeLog ##
+
+2016.06.17当前版本只有四种更新方式，可以支持断点续传。下一个版本会接入在线参数和强制更新功能
 
 ## About Author ##
 
