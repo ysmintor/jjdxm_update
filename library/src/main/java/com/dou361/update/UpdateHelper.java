@@ -4,29 +4,42 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.dou361.update.bean.Update;
-import com.dou361.update.listener.DownloadListener;
+import com.dou361.update.download.DownloadManager;
+import com.dou361.update.download.DownloadModel;
+import com.dou361.update.download.SqliteManager;
+import com.dou361.update.listener.OnlineCheckListener;
 import com.dou361.update.listener.UpdateListener;
-import com.dou361.update.util.NetworkUtil;
-import com.dou361.update.view.DialogDownloadUI;
-import com.dou361.update.view.DialogUI;
+
+import java.util.List;
 
 /**
  */
 public class UpdateHelper {
 
+    private SqliteManager manager;
     private Context mContext;
     private String checkUrl;
     private String onlineUrl;
-    private UpdateStrategy strategy;
-    private DialogUI dialogUI;
-    private DialogDownloadUI dialogDownloadUI;
     private ParseData parserCheckJson;
     private ParseData parserOnlineJson;
 
     private static UpdateHelper instance;
     private UpdateListener mUpdateListener;
-    private DownloadListener mDownloadListener;
+    private OnlineCheckListener mOnlineCheckListener;
+
+    //双重嵌套一级是否强制更新
+    private boolean updateForce = false;
+
+    //二级（1.手动更新2.自动更新（有网更新，只有WiFi更新，只有WiFi下载））
+    public enum UpdateType {
+        checkupdate,
+        autoupdate,
+        autowifiupdate,
+        autowifidown
+    }
+
+    //默认需要检测更新
+    private UpdateType mUpdateType = UpdateType.autoupdate;
 
     public static UpdateHelper getInstance() {
         if (instance == null) {
@@ -42,6 +55,11 @@ public class UpdateHelper {
 
     public UpdateHelper(Context context) {
         this.mContext = context;
+        //添加下载状态列表
+        manager = SqliteManager.getInstance(mContext);
+        List<DownloadModel> models = manager.getAllDownloadInfo();
+        DownloadManager.getInstance(mContext).addStateMap(models);
+
     }
 
     public UpdateHelper setCheckUrl(String url) {
@@ -59,8 +77,8 @@ public class UpdateHelper {
         return this;
     }
 
-    public UpdateHelper setDownListener(DownloadListener listener) {
-        this.mDownloadListener = listener;
+    public UpdateHelper setOnlineCheckListener(OnlineCheckListener listener) {
+        this.mOnlineCheckListener = listener;
         return this;
     }
 
@@ -74,8 +92,8 @@ public class UpdateHelper {
         return this;
     }
 
-    public UpdateHelper strategy(UpdateStrategy strategy) {
-        this.strategy = strategy;
+    public UpdateHelper setUpdateType(UpdateType updateType) {
+        this.mUpdateType = updateType;
         return this;
     }
 
@@ -86,43 +104,8 @@ public class UpdateHelper {
         return mContext;
     }
 
-    public UpdateStrategy getStrategy() {
-        if (strategy == null) {
-            strategy = new UpdateStrategy() {
-                boolean isWifi;
-
-                @Override
-                public boolean isShowUpdateDialog(Update update) {
-                    isWifi = NetworkUtil.isConnectedByWifi();
-                    if (isWifi) {
-                        return false;
-                    }
-                    return true;
-                }
-
-                @Override
-                public boolean isAutoInstall() {
-                    return false;
-                }
-
-                @Override
-                public boolean isShowInstallDialog() {
-                    if (isWifi) {
-                        return true;
-                    }
-                    return false;
-                }
-
-                @Override
-                public boolean isShowDownloadDialog() {
-                    if (isWifi) {
-                        return false;
-                    }
-                    return true;
-                }
-            };
-        }
-        return strategy;
+    public UpdateType getUpdateType() {
+        return mUpdateType;
     }
 
     public String getCheckUrl() {
@@ -134,20 +117,6 @@ public class UpdateHelper {
 
     public String getOnlineUrl() {
         return onlineUrl;
-    }
-
-    public DialogUI getDialogUI() {
-        if (dialogUI == null) {
-            dialogUI = new DialogUI();
-        }
-        return dialogUI;
-    }
-
-    public DialogDownloadUI getDialogDownloadUI() {
-        if (dialogDownloadUI == null) {
-            dialogDownloadUI = new DialogDownloadUI();
-        }
-        return dialogDownloadUI;
     }
 
     public ParseData getCheckJsonParser() {
@@ -163,14 +132,14 @@ public class UpdateHelper {
 
 
     public void check(Activity activity) {
-        Updater.getInstance().checkUpdate(activity);
+        UpdateAgent.getInstance().checkUpdate(activity);
     }
 
     public UpdateListener getUpdateListener() {
         return mUpdateListener;
     }
 
-    public DownloadListener getDownloadListener() {
-        return mDownloadListener;
+    public OnlineCheckListener getOnlineCheckListener() {
+        return mOnlineCheckListener;
     }
 }

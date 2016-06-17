@@ -1,4 +1,4 @@
-package com.dou361.update.http;
+package com.dou361.update.download;
 
 /**
  */
@@ -12,5 +12,5 @@ public interface IUpdateExecutor {
     /**
      * request download new version apk
      */
-    void download(DownloadWorker worker);
+    void onlineCheck(OnlineCheckWorker worker);
 }

@@ -1,10 +1,14 @@
 
 # [jjdxm_update][project] #
 ## Introduction ##
-应用内更新，实现类似友盟自动更新sdk的更新模式，用户使用前只需要配置自己的服务器更新检查接口即可（必须接口），也可以拓展加入一个接口作为在线参数配置来实现（可选接口）可实现以下三种方式更新：
-### 1.自动检测更新、手动检测更新 ###
-### 2.静默更新（WiFi环境自动下载） ###
-### 3.强制更新（配合在线参数使得当前版本无法使用） ###
+应用内更新，实现类似友盟自动更新sdk的更新模式，用户使用前只需要配置自己的服务器更新检查接口即可（必须接口），也可以拓展加入一个接口作为在线参数配置来实现（可选接口）可实现以下四种种方式更新和是否强制更新组合使用：
+## 更新检查 ##
+### 1.手动更新：手动检测更新（所有网络类型环境检测并提示主要用于点击检测使用）  ###
+### 2.自动更新：自动检测更新（所有网络类型环境检测并提示） ###
+### 3.仅WiFi自动检测更新（只有WiFi网络类型环境检测并提示） ###
+### 4.静默更新：仅WiFi自动检测下载（只有WiFi网络类型环境检测、下载完才提示） ###
+## 强制更新 ##
+强制更新（配合在线参数使得当前版本无法使用）结合以上几种方式组合使用，主要使用场景是当上一个版本的APP有重大bug或漏洞时，修改在线参数统一控制所有的APP用户，使得之前的所有版本必须要升级才能正常使用。主要原理：服务器上修改参数的数值，APP端获取后进行判断，如果为强制更新，则在打开应用是提示有新版APP更新，更新完成才能使用，提示框不消失，用户如果选择不更新则退出应用。
 
 
 [apk下载][downapk]
@@ -17,43 +21,95 @@
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon01.png" width="300"> 
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon02.png" width="300"> 
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon03.png" width="300">
+<img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon04.png" width="300">
 
 ## Get Started ##
 
 ### 需要权限 ###
 
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<!--jjdxm_update更新 start-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!--jjdxm_update更新 end-->
+
+清单文件中需要配置一个activity和一个服务
+
+	<!--jjdxm_update更新 start-->
+    <activity
+        android:name="com.dou361.update.view.UpdateDialogActivity"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+    </activity>
+
+    <service android:name="com.dou361.update.server.DownloadingService"/>
+    <!--jjdxm_update更新 end-->
 
 ### 1.在Application中配置，初始化配置接口和解析参数 ###
 
 
         UpdateConfig.init(this);
 
-### 2.在mainActivity中调用 ###
+	private static String checkUrl = "你的更新接口";
+    private static String onlineUrl = "你的在线参数接口";
+	//临时使用的下载地址
+    private static String apkFile = "http://wap.apk.anzhi.com/data3/apk/201512/20/55089e385f6e9f350e6455f995ca3452_26503500.apk";
+	public static void init(Context context) {
+        UpdateHelper.init(context);
+        UpdateHelper.getInstance()
+                // 必填：数据更新接口
+                .setCheckUrl(checkUrl)
+                // 可填：在线参数接口
+                .setOnlineUrl(onlineUrl)
+                // 必填：用于从数据更新接口获取的数据response中。解析出Update实例。以便框架内部处理
+                .setCheckJsonParser(new ParseData() {
+                    @Override
+                    public Update parse(String response) {
+                        // 此处模拟一个Update对象
+                        Update update = new Update();
+                        // 此apk包的下载地址
+                        update.setUpdateUrl(apkFile);
+                        // 此apk包的版本号
+                        update.setVersionCode(2);
+                        update.setApkSize(12400000);
+                        // 此apk包的版本名称
+                        update.setVersionName("2.0");
+                        // 此apk包的更新内容
+                        update.setUpdateContent("测试更新");
+                        // 此apk包是否为强制更新
+                        UpdateSP.setForced(false);
+                        return update;
+                    }
+                })
+                // 可填：在线参数接口
+                .setOnlineJsonParser(new ParseData() {
+                    @Override
+                    public String parse(String httpResponse) {
+                        return null;
+                    }
+                });
+    }
 
+
+### 2.在mainActivity中oncreate()方法中调用 ###
+	//默认是自动检测更新
 	UpdateBuilder.create()
-                .strategy(new UpdateStrategy() {
+                .check(MainActivity.this);
+
+### 3.在需要手动点击的方法中调用 ###
+
+	//手动检测更新
+	UpdateHelper.getInstance()
+                .setUpdateType(UpdateHelper.UpdateType.checkupdate)
+                .setUpdateListener(new UpdateListener() {
                     @Override
-                    public boolean isShowUpdateDialog(Update update) {
-                        return true;
+                    public void noUpdate() {
+                        Toast.makeText(mContext, "已经是最新版本了", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
-                    public boolean isAutoInstall() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isShowInstallDialog() {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean isShowDownloadDialog() {
-                        return true;
+                    public void onCheckError(int code, String errorMsg) {
+                        Toast.makeText(mContext, "检测更新失败：" + errorMsg, Toast.LENGTH_LONG).show();
                     }
                 })
                 .check(MainActivity.this);

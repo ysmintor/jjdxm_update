@@ -31,7 +31,7 @@ public class UpdateConfig {
 
     private static String checkUrl = "http://www.baidu.com";
     private static String onlineUrl = "http://www.baidu.com";
-    private static String apkFile = "http://apk.hiapk.com/appdown/com.hiapk.live?planid=2515816&seid=c711112f-cc50-0001-a55f-bfe5123fe450";
+    private static String apkFile = "http://wap.apk.anzhi.com/data3/apk/201512/20/55089e385f6e9f350e6455f995ca3452_26503500.apk";
 
     public static void init(Context context) {
         UpdateHelper.init(context);

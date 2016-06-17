@@ -1,21 +1,23 @@
-package com.dou361.update.http;
+package com.dou361.update.download;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * The executor to check update and download new version on network
+ *
  * @author lzh
  */
-public class UpdateExecutor implements IUpdateExecutor{
+public class UpdateExecutor implements IUpdateExecutor {
 
     private static ExecutorService pool;
     private static UpdateExecutor executor;
-    private UpdateExecutor () {
+
+    private UpdateExecutor() {
         pool = Executors.newSingleThreadExecutor();
     }
 
-    public synchronized static UpdateExecutor getInstance () {
+    public synchronized static UpdateExecutor getInstance() {
         if (executor == null) {
             executor = new UpdateExecutor();
         }
@@ -28,7 +30,7 @@ public class UpdateExecutor implements IUpdateExecutor{
     }
 
     @Override
-    public void download(DownloadWorker worker) {
+    public void onlineCheck(OnlineCheckWorker worker) {
         pool.execute(worker);
     }
 }

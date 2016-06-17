@@ -1,33 +1,28 @@
 package com.dou361.update;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 
 import com.dou361.update.bean.Update;
-import com.dou361.update.http.IUpdateExecutor;
-import com.dou361.update.http.UpdateExecutor;
-import com.dou361.update.http.UpdateWorker;
+import com.dou361.update.download.IUpdateExecutor;
+import com.dou361.update.download.UpdateExecutor;
+import com.dou361.update.download.UpdateWorker;
 import com.dou361.update.listener.UpdateListener;
 import com.dou361.update.server.DownloadingService;
-import com.dou361.update.util.DialogSafeOperator;
 import com.dou361.update.util.UpdateConstants;
-import com.dou361.update.util.UpdateSP;
-import com.dou361.update.view.DialogUI;
+import com.dou361.update.view.UpdateDialogActivity;
 
-import java.lang.ref.WeakReference;
-
-public class Updater {
-    private static Updater updater;
+public class UpdateAgent {
+    private static UpdateAgent updater;
     private IUpdateExecutor executor;
 
-    private Updater() {
+    private UpdateAgent() {
         executor = UpdateExecutor.getInstance();
     }
 
-    public static Updater getInstance() {
+    public static UpdateAgent getInstance() {
         if (updater == null) {
-            updater = new Updater();
+            updater = new UpdateAgent();
         }
         return updater;
     }
@@ -38,7 +33,7 @@ public class Updater {
      *
      * @param activity The activity who need to show update dialog
      */
-    public void onlineGet(Activity activity) {
+    public void onlineCheck(Activity activity) {
 
     }
 
@@ -53,31 +48,24 @@ public class Updater {
         checkWorker.setParser(UpdateHelper.getInstance().getCheckJsonParser());
 
         final UpdateListener mUpdate = UpdateHelper.getInstance().getUpdateListener();
-        final WeakReference<Activity> actRef = new WeakReference<>(activity);
         checkWorker.setUpdateListener(new UpdateListener() {
             @Override
             public void hasUpdate(Update update) {
                 if (mUpdate != null) {
                     mUpdate.hasUpdate(update);
                 }
-                if (!UpdateHelper.getInstance().getStrategy().isShowUpdateDialog(update)) {
+                if (UpdateHelper.getInstance().getUpdateType() == UpdateHelper.UpdateType.autowifidown) {
                     Intent intent = new Intent(activity, DownloadingService.class);
-                    intent.putExtra(UpdateConstants.SERVER_ACTION, UpdateConstants.START_DOWN);
-                    intent.putExtra("update", update);
+                    intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.START_DOWN);
+                    intent.putExtra(UpdateConstants.DATA_UPDATE, update);
                     activity.startService(intent);
-//                    Updater.getInstance().downUpdate(actRef.get(), update);
                     return;
                 }
 
-                DialogUI creator = UpdateHelper.getInstance().getDialogUI();
-                creator.setUpdateListener(this);
-                Dialog dialog = creator.create(0, update, null, actRef.get());
-
-                if (UpdateSP.isForced()) {
-                    dialog.setCanceledOnTouchOutside(false);
-                    dialog.setCancelable(false);
-                }
-                DialogSafeOperator.safeShowDialog(dialog);
+                Intent intent = new Intent(activity, UpdateDialogActivity.class);
+                intent.putExtra(UpdateConstants.DATA_UPDATE, update);
+                intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.UPDATE_TIE);
+                activity.startActivity(intent);
             }
 
             @Override

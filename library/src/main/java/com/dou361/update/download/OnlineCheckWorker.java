@@ -1,12 +1,8 @@
-package com.dou361.update.http;
+package com.dou361.update.download;
 
 import com.dou361.update.ParseData;
-import com.dou361.update.UpdateHelper;
-import com.dou361.update.bean.Update;
-import com.dou361.update.listener.UpdateListener;
+import com.dou361.update.listener.OnlineCheckListener;
 import com.dou361.update.util.HandlerUtil;
-import com.dou361.update.util.InstallUtil;
-import com.dou361.update.util.UpdateSP;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,17 +12,17 @@ import java.net.URL;
 /**
  *
  */
-public class UpdateWorker implements Runnable {
+public class OnlineCheckWorker implements Runnable {
 
     protected String url;
-    protected UpdateListener checkCB;
+    protected OnlineCheckListener checkCB;
     protected ParseData parser;
 
     public void setUrl(String url) {
         this.url = url;
     }
 
-    public void setUpdateListener(UpdateListener checkCB) {
+    public void setUpdateListener(OnlineCheckListener checkCB) {
         this.checkCB = checkCB;
     }
 
@@ -38,20 +34,13 @@ public class UpdateWorker implements Runnable {
     public void run() {
         try {
             String response = check(url);
-            Update parse = parser.parse(response);
+            String parse = parser.parse(response);
             if (parse == null) {
                 throw new IllegalArgumentException("parse response to update failed by " + parser.getClass().getCanonicalName());
             }
-            int curVersion = InstallUtil.getApkVersion(UpdateHelper.getInstance().getContext());
-            if (parse.getVersionCode() > curVersion && !UpdateSP.isIgnore(parse.getVersionCode() + "")) {
-                sendHasUpdate(parse);
-            } else {
-                sendNoUpdate();
-            }
+            sendHasUpdate(parse);
         } catch (HttpException he) {
-            sendOnErrorMsg(he.getCode(), he.getErrorMsg());
         } catch (Exception e) {
-            sendOnErrorMsg(-1, e.getMessage());
         }
     }
 
@@ -81,32 +70,12 @@ public class UpdateWorker implements Runnable {
         return sb.toString();
     }
 
-    private void sendHasUpdate(final Update update) {
+    private void sendHasUpdate(final String update) {
         if (checkCB == null) return;
         HandlerUtil.getMainHandler().post(new Runnable() {
             @Override
             public void run() {
-                checkCB.hasUpdate(update);
-            }
-        });
-    }
-
-    private void sendNoUpdate() {
-        if (checkCB == null) return;
-        HandlerUtil.getMainHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                checkCB.noUpdate();
-            }
-        });
-    }
-
-    private void sendOnErrorMsg(final int code, final String errorMsg) {
-        if (checkCB == null) return;
-        HandlerUtil.getMainHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                checkCB.onCheckError(code, errorMsg);
+                checkCB.hasParams(update);
             }
         });
     }

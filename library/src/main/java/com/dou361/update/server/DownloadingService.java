@@ -1,48 +1,44 @@
 
 package com.dou361.update.server;
 
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.dou361.update.R;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
-import com.dou361.update.http.DownloadWorker;
-import com.dou361.update.http.UpdateExecutor;
-import com.dou361.update.listener.DownloadListener;
-import com.dou361.update.util.DialogSafeOperator;
-import com.dou361.update.util.FileUtils;
-import com.dou361.update.util.InstallUtil;
+import com.dou361.update.download.DownloadManager;
+import com.dou361.update.download.ParamsManager;
 import com.dou361.update.util.UpdateConstants;
-import com.dou361.update.view.DialogDownloadUI;
-import com.dou361.update.view.DialogUI;
+import com.dou361.update.view.UpdateDialogActivity;
 
 import java.io.File;
+
 /**
  * ========================================
- * <p/>
+ * <p>
  * 版 权：dou361.com 版权所有 （C） 2015
- * <p/>
+ * <p>
  * 作 者：陈冠明
- * <p/>
+ * <p>
  * 个人网站：http://www.dou361.com
- * <p/>
+ * <p>
  * 版 本：1.0
- * <p/>
+ * <p>
  * 创建日期：2016/6/16 23:25
- * <p/>
+ * <p>
  * 描 述：原理
  * 纵线
  * 首先是点击更新时，弹出进度对话框（进度，取消和运行在后台），
@@ -52,11 +48,11 @@ import java.io.File;
  * 如果进入后台后，还在继续下载点击时重新回到原界面
  * 如果强制更新无进入后台功能
  * 如果是静默更新，安静的安装
- *
- * <p/>
- * <p/>
+ * <p>
+ * <p>
+ * <p>
  * 修订历史：
- * <p/>
+ * <p>
  * ========================================
  */
 public class DownloadingService extends Service {
@@ -66,8 +62,56 @@ public class DownloadingService extends Service {
     private Notification notification;
     private Update update;
     private NotificationCompat.Builder ntfBuilder;
-    private ProgressDialog dialogDowning;
-    private boolean dialogBackgroud;
+    private String url;
+    private Context mContext;
+    private DownloadManager manage;
+
+    public Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            String strUrl = (String) msg.obj;
+            if (url != null && url.equals(strUrl)) {
+                switch (msg.what) {
+                    case ParamsManager.State_NORMAL:
+                        break;
+                    case ParamsManager.State_DOWNLOAD:
+                        Bundle bundle = msg.getData();
+                        long current = bundle.getLong("percent");
+                        long total = bundle.getLong("loadSpeed");
+                        notifyNotification(current, total);
+                        break;
+                    case ParamsManager.State_FINISH:
+                        File fil = new File(manage.getDownPath(), url.substring(url.lastIndexOf("/") + 1, url.length()));
+                        showInstallNotificationUI(fil);
+                        if (UpdateHelper.getInstance().getUpdateType() == UpdateHelper.UpdateType.autowifidown) {
+                            installApk(mContext, fil);
+                        } else {
+                            Intent intent = new Intent(mContext, UpdateDialogActivity.class);
+                            intent.putExtra(UpdateConstants.DATA_UPDATE, update);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.UPDATE_INSTALL);
+                            intent.putExtra(UpdateConstants.SAVE_PATH, fil.getAbsolutePath());
+                            startActivity(intent);
+                        }
+                        break;
+                    case ParamsManager.State_PAUSE:
+                        break;
+                    case ParamsManager.State_WAIT:
+                        createNotification();
+                        break;
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        this.mContext = this;
+        manage = DownloadManager.getInstance(mContext);
+        manage.setHandler(handler);
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -77,87 +121,25 @@ public class DownloadingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            int action = intent.getIntExtra(UpdateConstants.SERVER_ACTION, 0);
+            int action = intent.getIntExtra(UpdateConstants.DATA_ACTION, 0);
             if (action == UpdateConstants.START_DOWN) {
-                update = (Update) intent.getSerializableExtra("update");
-                if (update != null && !TextUtils.isEmpty(update.getUpdateUrl())) {
-                    downApk();
+                update = (Update) intent.getSerializableExtra(UpdateConstants.DATA_UPDATE);
+                url = update.getUpdateUrl();
+                if (update != null && !TextUtils.isEmpty(url)) {
+                    manage.startDownload(url);
                 }
             } else if (action == UpdateConstants.PAUSE_DOWN) {
-                Toast.makeText(this, "暂停或开始", Toast.LENGTH_LONG).show();
+                if (manage.isDownloading(url)) {
+                    manage.pauseDownload(url);
+                } else {
+                    manage.startDownload(url);
+                }
             } else if (action == UpdateConstants.CANCEL_DOWN) {
-                Toast.makeText(this, "取消", Toast.LENGTH_LONG).show();
-
+                manage.deleteDownload(url);
             }
         }
 
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    private void downApk() {
-
-
-        DownloadWorker downloadWorker = new DownloadWorker();
-        downloadWorker.setUrl(update.getUpdateUrl());
-        final DownloadListener mDownload = UpdateHelper.getInstance().getDownloadListener();
-        final DialogDownloadUI dialogDownloadUI = UpdateHelper.getInstance().getDialogDownloadUI();
-        downloadWorker.setDownloadListener(new DownloadListener() {
-            @Override
-            public void onUpdateStart() {
-                if (mDownload != null) {
-                    mDownload.onUpdateStart();
-                }
-                if (UpdateHelper.getInstance().getStrategy().isShowDownloadDialog()) {
-                    dialogDowning = dialogDownloadUI.create(update);
-                    DialogSafeOperator.safeShowDialog(dialogDowning);
-                }
-            }
-
-            @Override
-            public void onUpdateComplete(File file) {
-                if (mDownload != null) {
-                    mDownload.onUpdateComplete(file);
-                }
-                DialogSafeOperator.safeDismissDialog(dialogDowning);
-                if (UpdateHelper.getInstance().getStrategy().isShowInstallDialog()) {
-                    if (dialogBackgroud) {
-                        showInstallNotificationUI(file);
-                    } else {
-
-                        DialogUI creator = UpdateHelper.getInstance().getDialogUI();
-                        Dialog dialog = creator.create(1, update, file.getAbsolutePath());
-                        DialogSafeOperator.safeShowDialog(dialog);
-                    }
-                } else if (UpdateHelper.getInstance().getStrategy().isAutoInstall()) {
-                    installApk(this, file);
-                }
-            }
-
-            @Override
-            public void onUpdateProgress(long current, long total) {
-                    if (mDownload != null) {
-                        mDownload.onUpdateProgress(current, total);
-                    }
-                if (dialogBackgroud) {
-                    notifyNotification(current, total);
-                } else {
-                    int percent = (int) (current * 1.0f / total * 100);
-                    if (dialogDowning != null) {
-                        dialogDowning.setProgress(percent);
-                    }
-                }
-            }
-
-            @Override
-            public void onUpdateError(int code, String errorMsg) {
-                if (mDownload != null) {
-                    mDownload.onUpdateError(code, errorMsg);
-                }
-                DialogSafeOperator.safeDismissDialog(dialogDowning);
-            }
-        });
-        downloadWorker.setCacheFileName(FileUtils.createFile(update.getVersionName()));
-        UpdateExecutor.getInstance().download(downloadWorker);
     }
 
     @SuppressWarnings("deprecation")
@@ -172,16 +154,17 @@ public class DownloadingService extends Service {
         contentView.setTextViewText(R.id.jjdxm_update_title, getApplicationInfo().name);
         contentView.setProgressBar(R.id.jjdxm_update_progress_bar, 100, 0, false);
         contentView.setTextViewText(R.id.jjdxm_update_progress_text, "0%");
+
         /**暂停和开始*/
         Intent pauseIntent = new Intent(this, DownloadingService.class);
-        pauseIntent.putExtra(UpdateConstants.SERVER_ACTION, UpdateConstants.PAUSE_DOWN);
+        pauseIntent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.PAUSE_DOWN);
         pauseIntent.putExtra("update", update);
         PendingIntent pendingIntent1 = PendingIntent.getService(this, 0, pauseIntent, 0);
         contentView.setOnClickPendingIntent(R.id.jjdxm_update_rich_notification_continue, pendingIntent1);
 
         /**取消*/
         Intent cancelIntent = new Intent(this, DownloadingService.class);
-        cancelIntent.putExtra(UpdateConstants.SERVER_ACTION, UpdateConstants.CANCEL_DOWN);
+        cancelIntent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.CANCEL_DOWN);
         cancelIntent.putExtra("update", update);
         PendingIntent pendingIntent2 = PendingIntent.getService(this, 0, cancelIntent, 0);
         contentView.setOnClickPendingIntent(R.id.jjdxm_update_rich_notification_cancel, pendingIntent2);
