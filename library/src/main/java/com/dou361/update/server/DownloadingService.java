@@ -16,11 +16,11 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
-import com.dou361.update.R;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
 import com.dou361.update.download.DownloadManager;
 import com.dou361.update.download.ParamsManager;
+import com.dou361.update.util.ResourceUtils;
 import com.dou361.update.util.UpdateConstants;
 import com.dou361.update.view.UpdateDialogActivity;
 
@@ -79,6 +79,9 @@ public class DownloadingService extends Service {
                         Bundle bundle = msg.getData();
                         long current = bundle.getLong("percent");
                         long total = bundle.getLong("loadSpeed");
+                        if (total <= 0) {
+                            return;
+                        }
                         notifyNotification(current, total);
                         break;
                     case ParamsManager.State_FINISH:
@@ -150,24 +153,24 @@ public class DownloadingService extends Service {
                 System.currentTimeMillis());
         notification.flags = Notification.FLAG_ONGOING_EVENT;
         /*** 自定义  Notification 的显示****/
-        contentView = new RemoteViews(getPackageName(), R.layout.jjdxm_download_notification);
-        contentView.setTextViewText(R.id.jjdxm_update_title, getApplicationInfo().name);
-        contentView.setProgressBar(R.id.jjdxm_update_progress_bar, 100, 0, false);
-        contentView.setTextViewText(R.id.jjdxm_update_progress_text, "0%");
+        contentView = new RemoteViews(getPackageName(), ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_download_notification"));
+        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_title"), getApplicationInfo().name);
+        contentView.setProgressBar(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"), 100, 0, false);
+        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"), "0%");
 
         /**暂停和开始*/
         Intent pauseIntent = new Intent(this, DownloadingService.class);
         pauseIntent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.PAUSE_DOWN);
         pauseIntent.putExtra("update", update);
         PendingIntent pendingIntent1 = PendingIntent.getService(this, 0, pauseIntent, 0);
-        contentView.setOnClickPendingIntent(R.id.jjdxm_update_rich_notification_continue, pendingIntent1);
+        contentView.setOnClickPendingIntent(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_continue"), pendingIntent1);
 
         /**取消*/
         Intent cancelIntent = new Intent(this, DownloadingService.class);
         cancelIntent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.CANCEL_DOWN);
         cancelIntent.putExtra("update", update);
         PendingIntent pendingIntent2 = PendingIntent.getService(this, 0, cancelIntent, 0);
-        contentView.setOnClickPendingIntent(R.id.jjdxm_update_rich_notification_cancel, pendingIntent2);
+        contentView.setOnClickPendingIntent(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_cancel"), pendingIntent2);
 
         notification.contentView = contentView;
         notification.flags = Notification.FLAG_AUTO_CANCEL;
@@ -177,8 +180,8 @@ public class DownloadingService extends Service {
     }
 
     private void notifyNotification(long percent, long length) {
-        contentView.setTextViewText(R.id.jjdxm_update_progress_text, (percent * 100 / length) + "%");
-        contentView.setProgressBar(R.id.jjdxm_update_progress_bar, (int) length, (int) percent, false);
+        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"), (percent * 100 / length) + "%");
+        contentView.setProgressBar(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"), (int) length, (int) percent, false);
         notification.contentView = contentView;
         notificationManager.notify(UpdateConstants.NOTIFICATION_ACTION, notification);
     }

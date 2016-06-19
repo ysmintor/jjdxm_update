@@ -22,8 +22,15 @@
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon02.png" width="300"> 
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon03.png" width="300">
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon04.png" width="300">
+<img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon05.png" width="300">
 
 ## Get Started ##
+
+### 两种方式接入sdk ###
+### aar方式接入 ###
+复制aar文件到libs文件夹中并在引入依赖
+### jar方式接入 ###
+复制release文件夹下面的jjdxmupdate-xxx.jar和res-xxx文件夹到对应的资源文件夹中
 
 ### 需要权限 ###
 

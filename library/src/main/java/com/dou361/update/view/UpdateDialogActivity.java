@@ -12,7 +12,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.dou361.update.R;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
 import com.dou361.update.download.DownloadManager;
@@ -20,6 +19,7 @@ import com.dou361.update.download.ParamsManager;
 import com.dou361.update.server.DownloadingService;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.NetworkUtil;
+import com.dou361.update.util.ResourceUtils;
 import com.dou361.update.util.UpdateConstants;
 import com.dou361.update.util.UpdateSP;
 
@@ -65,18 +65,18 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.jjdxm_update_dialog);
         mContext = this;
+        setContentView(ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_update_dialog"));
         Intent intent = getIntent();
         mUpdate = (Update) intent.getSerializableExtra(UpdateConstants.DATA_UPDATE);
         mAction = intent.getIntExtra(UpdateConstants.DATA_ACTION, 0);
         mPath = intent.getStringExtra(UpdateConstants.SAVE_PATH);
         String updateContent = null;
-        jjdxm_update_wifi_indicator = findViewById(R.id.jjdxm_update_wifi_indicator);
-        jjdxm_update_content = (TextView) findViewById(R.id.jjdxm_update_content);
-        jjdxm_update_id_check = (CheckBox) findViewById(R.id.jjdxm_update_id_check);
-        jjdxm_update_id_ok = (Button) findViewById(R.id.jjdxm_update_id_ok);
-        jjdxm_update_id_cancel = (Button) findViewById(R.id.jjdxm_update_id_cancel);
+        jjdxm_update_wifi_indicator = findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_wifi_indicator"));
+        jjdxm_update_content = (TextView) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_content"));
+        jjdxm_update_id_check = (CheckBox) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_check"));
+        jjdxm_update_id_ok = (Button) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_ok"));
+        jjdxm_update_id_cancel = (Button) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_cancel"));
         if (NetworkUtil.isConnectedByWifi()) {
             //WiFi环境
             jjdxm_update_wifi_indicator.setVisibility(View.INVISIBLE);
@@ -90,9 +90,9 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
                 String url = mUpdate.getUpdateUrl();
                 mPath = DownloadManager.getInstance(mContext).getDownPath() + File.separator + url.substring(url.lastIndexOf("/") + 1, url.length());
             }
-            text = getText(R.string.jjdxm_update_dialog_installapk) + "";
+            text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_dialog_installapk")) + "";
         } else {
-            text = getText(R.string.jjdxm_update_targetsize) + getFormatSize(mUpdate.getApkSize());
+            text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_targetsize")) + getFormatSize(mUpdate.getApkSize());
         }
         if (UpdateHelper.getInstance().getUpdateType() == UpdateHelper.UpdateType.checkupdate) {
             //手动更新
@@ -101,21 +101,21 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
             jjdxm_update_id_check.setVisibility(View.VISIBLE);
         }
         if (mAction == 0) {
-            updateContent = getText(R.string.jjdxm_update_newversion)
+            updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
                     + mUpdate.getVersionName() + "\n"
                     + text + "\n\n"
-                    + getText(R.string.jjdxm_update_updatecontent) + "\n" + mUpdate.getUpdateContent() +
+                    + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
                     "\n";
-            jjdxm_update_id_ok.setText(R.string.jjdxm_update_updatenow);
+            jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatenow"));
             jjdxm_update_content.setText(updateContent);
         } else {
             finshDown = true;
-            updateContent = getText(R.string.jjdxm_update_newversion)
+            updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
                     + mUpdate.getVersionName() + "\n"
                     + text + "\n\n"
-                    + getText(R.string.jjdxm_update_updatecontent) + "\n" + mUpdate.getUpdateContent() +
+                    + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
                     "\n";
-            jjdxm_update_id_ok.setText(R.string.jjdxm_update_installnow);
+            jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_installnow"));
             jjdxm_update_content.setText(updateContent);
         }
         jjdxm_update_id_check.setOnCheckedChangeListener(this);
@@ -155,7 +155,7 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.jjdxm_update_id_ok) {
+        if (id == ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_ok")) {
             if (finshDown) {
                 InstallUtil.installApk(mContext, mPath);
             } else {
@@ -165,9 +165,8 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
                 startService(intent);
             }
             finish();
-        } else if (id == R.id.jjdxm_update_id_cancel) {
+        } else if (id == ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_cancel")) {
             if (UpdateSP.isForced()) {
-                //TODO 退出应用
                 finish();
             } else {
                 finish();
