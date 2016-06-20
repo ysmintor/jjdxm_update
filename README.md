@@ -15,7 +15,7 @@
 ## Features ##
 ### 1.更新数据接口用户可自定义 ###
 ### 2.在线参数接口用户可自定义 ###
-### 3.参数结构返回回到让用户自定义解析 ###
+### 3.参数结构返回可以让用户自定义解析 ###
 ## Screenshots ##
 
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon01.png" width="300"> 
@@ -131,7 +131,7 @@
                 })
                 .check(MainActivity.this);
 
-4.几种方式的调用
+### 4.几种方式的调用 ###
 
 	//有网更新
 	UpdateHelper.UpdateType.checkupdate,
@@ -149,7 +149,7 @@
 				.setUpdateType(UpdateHelper.UpdateType.autowifidown)
                 .check(MainActivity.this);
 
-5.更新监听回调UpdateListener，主要有四个方法
+### 5.更新监听回调UpdateListener，主要有四个方法 ###
 
 	/**
      * There are a new version of APK on network
