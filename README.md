@@ -32,6 +32,10 @@
 ### jar方式接入 ###
 复制release文件夹下面的jjdxmupdate-xxx.jar和res-xxx文件夹到对应的资源文件夹中
 
+当前jar依赖v7 jar，需要在gradle文件中配置
+
+    compile 'com.android.support:appcompat-v7:x.x.x'
+
 ### 需要权限 ###
 
 	<!--jjdxm_update更新 start-->
