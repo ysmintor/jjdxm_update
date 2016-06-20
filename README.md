@@ -59,7 +59,13 @@
 ### 1.在Application中配置，初始化配置接口和解析参数 ###
 
 
-        UpdateConfig.init(this);
+这里必须配置一个在线更新接口及其的数据返回结构的解析，可选的是在线参数接口及其数据返回结构的解析，在线参数可以随机定义零个或多个不同意义的参数来达到在线修改apk的部分特性。
+
+在Application的oncreate方法中调用
+    
+	init(this);
+
+配置接口和解析数据
 
 	private static String checkUrl = "你的更新接口";
     private static String onlineUrl = "你的在线参数接口";
@@ -104,7 +110,7 @@
 
 ### 2.在mainActivity中oncreate()方法中调用 ###
 	//默认是自动检测更新
-	UpdateBuilder.create()
+	UpdateHelper.getInstance()
                 .check(MainActivity.this);
 
 ### 3.在需要手动点击的方法中调用 ###
@@ -139,7 +145,7 @@
 调用方式这里只举例静默更新，其他方式类似
 
 	/静默更新
-	UpdateBuilder.create()
+	UpdateHelper.getInstance()
 				.setUpdateType(UpdateHelper.UpdateType.autowifidown)
                 .check(MainActivity.this);
 
@@ -177,7 +183,11 @@
 
 ## ChangeLog ##
 
-2016.06.17当前版本只有四种更新方式，可以支持断点续传。下一个版本会接入在线参数和强制更新功能
+2016.06.20修复通知栏提示报错问题，修改v7.jar依赖方式，让用户自己去配置版本。下一个版本会接入在线参数和强制更新功能
+
+2016.06.17当前版本只有四种更新方式，可以支持断点续传。
+
+
 
 ## About Author ##
 
