@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-Properties props = new Properties();
+Properties props = new Properties()
 props.load(new FileInputStream(file(rootProject.file("signing.properties"))))
 
 android {

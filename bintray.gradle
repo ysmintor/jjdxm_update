@@ -1,0 +1,104 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+Properties projects = new Properties()
+projects.load(project.rootProject.file('project.properties').newDataInputStream())
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+project_name = projects.getProperty('project.name')
+project_description = projects.getProperty('project.description')
+project_groupId = projects.getProperty('project.groupId')
+project_artifactId = projects.getProperty('project.artifactId')
+project_version = projects.getProperty('project.version')
+project_packaging = projects.getProperty('project.packaging')
+project_repo = projects.getProperty('project.repo')
+project_siteUrl = projects.getProperty('project.siteUrl')
+project_gitUrl = projects.getProperty('project.gitUrl')
+project_licenseName = projects.getProperty('project.licenseName')
+project_licenseUrl = projects.getProperty('project.licenseUrl')
+project_allLicenses = projects.getProperty('project.allLicenses')
+
+developer_id = properties.getProperty("developer.id")
+developer_name = properties.getProperty("developer.name")
+developer_email = properties.getProperty("developer.email")
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging project_packaging
+                name project_description  //项目描述
+                url project_siteUrl
+
+                groupId project_groupId
+                artifactId project_artifactId
+                version project_version
+
+                licenses {
+                    license {
+                        name project_licenseName
+                        url project_licenseUrl
+                    }
+                }
+                developers {
+                    developer {
+                        id developer_id       //填写开发者基本信息
+                        name developer_name
+                        email developer_email
+                    }
+                }
+                scm {
+                    connection project_gitUrl
+                    developerConnection project_gitUrl
+                    url project_siteUrl
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+javadoc {
+    options{
+        encoding "UTF-8"
+        charSet 'UTF-8'
+        author true
+        version true
+        links "http://docs.oracle.com/javase/7/docs/api"
+        title project_artifactId
+    }
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+    pkg {
+        repo = project_repo  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
+        name = project_name  //发布到Bintray上的项目名字
+        websiteUrl = project_siteUrl
+        vcsUrl = project_gitUrl
+        licenses = project_allLicenses
+        publish = true
+    }
+}
+
