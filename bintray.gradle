@@ -20,6 +20,8 @@ project_licenseName = projects.getProperty('project.licenseName')
 project_licenseUrl = projects.getProperty('project.licenseUrl')
 project_allLicenses = projects.getProperty('project.allLicenses')
 
+bintray_user = properties.getProperty("bintray.user")
+bintray_apikey = properties.getProperty("bintray.apikey")
 developer_id = properties.getProperty("developer.id")
 developer_name = properties.getProperty("developer.name")
 developer_email = properties.getProperty("developer.email")
@@ -69,18 +71,8 @@ task javadoc(type: Javadoc) {
 }
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
+    options.encoding = "utf-8"
     from javadoc.destinationDir
-}
-
-javadoc {
-    options{
-        encoding "UTF-8"
-        charSet 'UTF-8'
-        author true
-        version true
-        links "http://docs.oracle.com/javase/7/docs/api"
-        title project_artifactId
-    }
 }
 
 artifacts {
@@ -89,8 +81,8 @@ artifacts {
 }
 
 bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
+    user = bintray_user
+    key = bintray_apikey
     configurations = ['archives']
     pkg {
         repo = project_repo  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
