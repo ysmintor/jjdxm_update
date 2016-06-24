@@ -25,5 +25,6 @@ dependencies {
     compile rootProject.ext.jjdxm_v4
 }
 
-apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/bulidlib.gradle'
-apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/bintray.gradle'
+//apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/bulidlib.gradle'
+//apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/bintray.gradle'
+apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/novoda.gradle'

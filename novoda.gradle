@@ -1,0 +1,13 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.novoda.bintray-release'
+
+
+publish {
+    userOrg = 'jjdxmashl'
+    groupId = 'com.dou361.update'
+    artifactId = 'jjdxm-update'
+    publishVersion = '1.0.0'
+    desc = 'this is a update library of the application'
+    website = 'https://github.com/jjdxmashl/jjdxm_update'
+}
