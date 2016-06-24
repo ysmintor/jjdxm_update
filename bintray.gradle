@@ -1,40 +1,40 @@
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
-Properties projects = new Properties()
-projects.load(project.rootProject.file('project.properties').newDataInputStream())
-
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+group = jjdxm_groupId
 
 install {
     repositories.mavenInstaller {
         pom {
             project {
-                packaging projects['project.packaging']
-                name projects['project.description']  //项目描述
-                url projects['project.siteUrl']
+                packaging jjdxm_packaging
+                name jjdxm_bintrayName  //项目描述
+                url jjdxm_siteUrl
 
-                groupId projects['project.groupId']
-                artifactId projects['project.artifactId']
-                version projects['project.version']
+                groupId jjdxm_groupId
+                artifactId jjdxm_artifactId
+                version jjdxm_libraryVersion
 
                 licenses {
                     license {
-                        name projects['project.licenseName']
-                        url projects['project.licenseUrl']
+                        name jjdxm_licenseName
+                        url jjdxm_licenseUrl
                     }
                 }
                 developers {
                     developer {
-                        name properties['developer.name']  //填写开发者基本信息
-                        email properties['developer.email']
+                        id jjdxm_developerId  //填写开发者基本信息
+                        name jjdxm_developerName  //填写开发者基本信息
+                        email jjdxm_developerEmail
                     }
                 }
                 scm {
-                    connection projects['project.gitUrl']
-                    developerConnection projects['project.gitUrl']
-                    url projects['project.siteUrl']
+                    connection jjdxm_gitUrl
+                    developerConnection jjdxm_gitUrl
+                    url jjdxm_siteUrl
                 }
             }
         }
@@ -69,16 +69,19 @@ artifacts {
     archives sourcesJar
 }
 
+
+version = jjdxm_libraryVersion
+
 bintray {
     user = properties['bintray.user']
     key = properties['bintray.apikey']
     configurations = ['archives']
     pkg {
-        repo = projects['project.repo']  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
-        name = projects['project.name']  //发布到Bintray上的项目名字
-        websiteUrl = projects['project.siteUrl']
-        vcsUrl = projects['project.gitUrl']
-        licenses = projects['project.allLicenses']
+        repo = jjdxm_bintrayRepo  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
+        name = jjdxm_bintrayName  //发布到Bintray上的项目名字
+        websiteUrl = jjdxm_siteUrl
+        vcsUrl = jjdxm_gitUrl
+        licenses = jjdxm_allLicenses
         publish = true
     }
 }
