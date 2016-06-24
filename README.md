@@ -27,14 +27,34 @@
 ## Get Started ##
 
 ### 两种方式接入sdk ###
-### aar方式接入 ###
-复制aar文件到libs文件夹中并在引入依赖
-### jar方式接入 ###
-复制release文件夹下面的jjdxmupdate-xxx.jar和res-xxx文件夹到对应的资源文件夹中
+### 1.aar方式接入 ###
+#### （1）复制文件到项目中 ####
 
-当前jar依赖v7 jar，需要在gradle文件中配置
+复制release文件夹下面的aar文件到libs文件夹中并在引入依赖(x.x.x为对应的版本号，如1.0.0)
 
-    compile 'com.android.support:appcompat-v7:x.x.x'
+	compile(name: 'jjdxm-update-x.x.x', ext: 'aar')
+
+#### （2）添加依赖到项目中 ####
+直接在项目中添加依赖(x.x.x为对应的版本号，如1.0.0)
+
+	compile 'com.dou361.update:jjdxm-update:x.x.x'
+
+### 2.jar方式接入 ###
+#### （1）复制文件到项目中 ####
+复制release文件夹下面的jjdxm-update-x.x.x.jar和res-x.x.x文件夹到对应的资源文件夹中，需要添加引用
+
+	compile fileTree(include: ['*.jar'], dir: 'libs')
+
+或者
+
+	compile 'jjdxm-update-x.x.x'
+
+
+### 需要依赖v4包 ###
+
+当前jar依赖v4 jar，需要在gradle文件中配置
+
+    compile 'com.android.support:support-v4:x.x.x'
 
 ### 需要权限 ###
 
