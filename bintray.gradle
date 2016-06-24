@@ -22,7 +22,7 @@ project_allLicenses = projects.getProperty('project.allLicenses')
 
 bintray_user = properties.getProperty("bintray.user")
 bintray_apikey = properties.getProperty("bintray.apikey")
-developer_id = properties.getProperty("developer.id")
+//developer_id = properties.getProperty("developer.id")
 developer_name = properties.getProperty("developer.name")
 developer_email = properties.getProperty("developer.email")
 
@@ -30,31 +30,30 @@ install {
     repositories.mavenInstaller {
         pom {
             project {
-                packaging project_packaging
-                name project_description  //项目描述
-                url project_siteUrl
+                packaging projects['project.packaging']
+                name projects['project.description']  //项目描述
+                url projects['project.siteUrl']
 
-                groupId project_groupId
-                artifactId project_artifactId
-                version project_version
+                groupId projects['project.groupId']
+                artifactId projects['project.artifactId']
+                version projects['project.version']
 
                 licenses {
                     license {
-                        name project_licenseName
-                        url project_licenseUrl
+                        name projects['project.licenseName']
+                        url projects['project.licenseUrl']
                     }
                 }
                 developers {
                     developer {
-                        id developer_id       //填写开发者基本信息
-                        name developer_name
+                        name developer_name  //填写开发者基本信息
                         email developer_email
                     }
                 }
                 scm {
-                    connection project_gitUrl
-                    developerConnection project_gitUrl
-                    url project_siteUrl
+                    connection projects['project.gitUrl']
+                    developerConnection projects['project.gitUrl']
+                    url projects['project.siteUrl']
                 }
             }
         }
@@ -85,12 +84,12 @@ bintray {
     key = bintray_apikey
     configurations = ['archives']
     pkg {
-        repo = project_repo  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
-        name = project_name  //发布到Bintray上的项目名字
-        websiteUrl = project_siteUrl
-        vcsUrl = project_gitUrl
-        licenses = project_allLicenses
+        repo = projects['project.repo']  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
+        name = projects['project.name']  //发布到Bintray上的项目名字
+        websiteUrl = projects['project.siteUrl']
+        vcsUrl = projects['project.gitUrl']
+        licenses = projects['project.allLicenses']
         publish = true
-    }
+    }projects[]
 }
 
