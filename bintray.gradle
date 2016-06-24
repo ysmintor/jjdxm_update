@@ -1,6 +1,5 @@
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.novoda.bintray-release'
 
 Properties projects = new Properties()
 projects.load(project.rootProject.file('project.properties').newDataInputStream())
