@@ -11,7 +11,7 @@ install {
         pom {
             project {
                 packaging jjdxm_packaging
-                name jjdxm_bintrayName  //项目描述
+                name jjdxm_libraryName  //项目描述
                 url jjdxm_siteUrl
 
                 groupId jjdxm_groupId
