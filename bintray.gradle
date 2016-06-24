@@ -38,6 +38,10 @@ install {
     }
 }
 
+task jar(type: Jar) {
+    from( 'build/intermediates/classes/release')
+}
+
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
@@ -64,6 +68,7 @@ task sourcesJar(type: Jar) {
 //}
 
 artifacts {
+    archives jar
 //    archives javadocJar
     archives sourcesJar
 }
