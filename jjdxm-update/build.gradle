@@ -1,20 +1,20 @@
 apply plugin: 'com.android.library'
 
 ext {
+    //类库的module名、bintray上项目名、artifactId最好是一致的
     jjdxm_bintrayRepo = 'maven'
     jjdxm_bintrayName = 'jjdxm-update'
 
-    jjdxm_groupId = 'com.dou361.update'
-    jjdxm_libraryName = 'jjdxmupdate'
-    jjdxm_artifactId = 'jjdxm-update'
     jjdxm_packaging = 'aar'
+    jjdxm_groupId = 'com.dou361.update'
+    jjdxm_artifactId = 'jjdxm-update'
 
+    jjdxm_libraryVersion = '1.0.0'
+    jjdxm_libraryName = 'jjdxmupdate'
     jjdxm_libraryDescription = 'this is a update library of the application'
 
     jjdxm_siteUrl = 'https://github.com/jjdxmashl/jjdxm_update'
     jjdxm_gitUrl = 'https://github.com/jjdxmashl/jjdxm_update.git'
-
-    jjdxm_libraryVersion = '1.0.0'
 
     jjdxm_developerId = 'jjdxmashl'
     jjdxm_developerName = 'jjdxmashl'
@@ -41,7 +41,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
