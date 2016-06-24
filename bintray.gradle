@@ -7,12 +7,6 @@ projects.load(project.rootProject.file('project.properties').newDataInputStream(
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-bintray_user = properties.getProperty("bintray.user")
-bintray_apikey = properties.getProperty("bintray.apikey")
-//developer_id = properties.getProperty("developer.id")
-developer_name = properties.getProperty("developer.name")
-developer_email = properties.getProperty("developer.email")
-
 install {
     repositories.mavenInstaller {
         pom {
@@ -33,8 +27,8 @@ install {
                 }
                 developers {
                     developer {
-                        name developer_name  //填写开发者基本信息
-                        email developer_email
+                        name properties['developer.name']  //填写开发者基本信息
+                        email properties['developer.email']
                     }
                 }
                 scm {
@@ -67,8 +61,8 @@ artifacts {
 }
 
 bintray {
-    user = bintray_user
-    key = bintray_apikey
+    user = properties['bintray.user']
+    key = properties['bintray.apikey']
     configurations = ['archives']
     pkg {
         repo = projects['project.repo']  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
@@ -77,6 +71,6 @@ bintray {
         vcsUrl = projects['project.gitUrl']
         licenses = projects['project.allLicenses']
         publish = true
-    }projects[]
+    }
 }
 
