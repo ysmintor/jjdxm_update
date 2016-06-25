@@ -9,7 +9,7 @@ ext {
     jjdxm_groupId = 'com.dou361.update'
     jjdxm_artifactId = 'jjdxm-update'
 
-    jjdxm_libraryVersion = '1.0.0'
+    jjdxm_libraryVersion = '1.0.1'
     jjdxm_libraryName = 'jjdxmupdate'
     jjdxm_libraryDescription = 'this is a update library of the application'
 
@@ -23,6 +23,9 @@ ext {
     jjdxm_licenseName = 'The Apache Software License, Version 2.0'
     jjdxm_licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
     jjdxm_allLicenses = ["Apache-2.0"]
+
+    jjdxm_singlePath = 'build/intermediates/classes/release'
+    jjdxm_singleJar = jjdxm_artifactId+'-'+jjdxm_libraryVersion+'.jar'
 }
 
 android {
@@ -49,5 +52,5 @@ dependencies {
     compile rootProject.ext.jjdxm_v4
 }
 
-//apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/bulidlib.gradle'
-//apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/bintray.gradle'
+//apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_ecodingprocess/master/bulidlib.gradle'
+//apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_ecodingprocess/master/bintray.gradle'

@@ -11,7 +11,6 @@
 强制更新（配合在线参数使得当前版本无法使用）结合以上几种方式组合使用，主要使用场景是当上一个版本的APP有重大bug或漏洞时，修改在线参数统一控制所有的APP用户，使得之前的所有版本必须要升级才能正常使用。主要原理：服务器上修改参数的数值，APP端获取后进行判断，如果为强制更新，则在打开应用是提示有新版APP更新，更新完成才能使用，提示框不消失，用户如果选择不更新则退出应用。
 
 
-[apk下载][downapk]
 ## Features ##
 ### 1.更新数据接口用户可自定义 ###
 ### 2.在线参数接口用户可自定义 ###
@@ -24,32 +23,52 @@
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon04.png" width="300">
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon05.png" width="300">
 
-## Get Started ##
+## Download ##
 
-### 两种方式接入sdk ###
-### 1.aar方式接入 ###
-#### （1）复制文件到项目中 ####
+[demo apk下载][downapk]
 
-复制release文件夹下面的aar文件到libs文件夹中并在引入依赖(x.x.x为对应的版本号，如1.0.0)
+[下载最新版本aar][lastaar]
 
-	compile(name: 'jjdxm-update-x.x.x', ext: 'aar')
+[下载最新版本jar][lastjar]
 
-#### （2）添加依赖到项目中 ####
-直接在项目中添加依赖(x.x.x为对应的版本号，如1.0.0)
+Download or grab via Maven:
+
+	<dependency>
+	  <groupId>com.dou361.update</groupId>
+	  <artifactId>jjdxm-update</artifactId>
+	  <version>x.x.x</version>
+	</dependency>
+
+or Gradle:
 
 	compile 'com.dou361.update:jjdxm-update:x.x.x'
 
-### 2.jar方式接入 ###
-#### （1）复制文件到项目中 ####
-复制release文件夹下面的jjdxm-update-x.x.x.jar和res-x.x.x文件夹到对应的资源文件夹中，需要添加引用
 
-	compile fileTree(include: ['*.jar'], dir: 'libs')
+jjdxm-update requires at minimum Java 15 or Android 4.0.
 
-或者
+## Get Started ##
 
-	compile 'jjdxm-update-x.x.x'
+### SDK集成 ###
+在项目中添加依赖(x.x.x为对应的版本号，如1.0.0)
 
+### Android Studio集成 ###
 
+在线快速集成
+
+	compile 'com.dou361.update:jjdxm-update:x.x.x@aar'
+
+离线集成复制aar文件到libs添加引用
+
+	compile(name: 'jjdxm-update-x.x.x', ext: 'aar')
+
+需要修改布局界面可集成，并复制release文件夹下的res-x.x.x到对应工程的资源文件夹中
+
+	compile 'com.dou361.update:jjdxm-update:x.x.x'
+
+### Eclipse集成 ###
+
+复制release文件夹下面的压缩包jjdxm-update-x.x.x.jar放入工程的 libs 中和res-x.x.x文件夹放入工程对应的资源文件夹中，并添加引用
+	
 ### 需要依赖v4包 ###
 
 当前jar依赖v4 jar，需要在gradle文件中配置
@@ -246,5 +265,7 @@ If you find any bug when using project, please report [here][issues]. Thanks for
 [project]:https://github.com/jjdxmashl/jjdxm_update/
 [issues]:https://github.com/jjdxmashl/jjdxm_update/issues/new
 [downapk]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/apk/app-debug.apk
+[lastaar]:https://search.maven.org/remote_content?g=com.dou361.update&a=jjdxm-update&v=LATEST
+[lastjar]:https://search.maven.org/remote_content?g=com.dou361.update&a=jjdxm-update&v=LATEST
 [icon01]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon01.png
 [icon02]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon02.png
