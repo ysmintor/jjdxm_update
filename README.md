@@ -265,7 +265,7 @@ If you find any bug when using project, please report [here][issues]. Thanks for
 [project]:https://github.com/jjdxmashl/jjdxm_update/
 [issues]:https://github.com/jjdxmashl/jjdxm_update/issues/new
 [downapk]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/apk/app-debug.apk
-[lastaar]:https://search.maven.org/remote_content?g=com.dou361.update&a=jjdxm-update&v=LATEST
-[lastjar]:https://search.maven.org/remote_content?g=com.dou361.update&a=jjdxm-update&v=LATEST
+[lastaar]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/release/jjdxm-update-1.0.0.aar
+[lastjar]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/release/jjdxm-update-1.0.0.jar
 [icon01]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon01.png
 [icon02]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon02.png
