@@ -214,8 +214,6 @@ public class DownloadManager {
 
 	/**
 	 * 删除指定下载
-	 * 
-	 * @param url
 	 */
 	public void deleteDownload(String url) {
 		SqliteManager.getInstance(context).deleteByUrl(url);
@@ -227,8 +225,6 @@ public class DownloadManager {
 
 	/**
 	 * 删除所有下载
-	 * 
-	 * @param url
 	 */
 	public void deleteAllDownload() {
 		Iterator it = taskmap.keySet().iterator();
