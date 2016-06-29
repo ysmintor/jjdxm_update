@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.dou361.update.download.DownloadManager;
-import com.dou361.update.download.DownloadModel;
-import com.dou361.update.download.SqliteManager;
+import com.dou361.download.DownloadManager;
+import com.dou361.download.DownloadModel;
+import com.dou361.download.SqliteManager;
 import com.dou361.update.listener.OnlineCheckListener;
 import com.dou361.update.listener.UpdateListener;
 

@@ -16,10 +16,10 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
+import com.dou361.download.DownloadManager;
+import com.dou361.download.ParamsManager;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
-import com.dou361.update.download.DownloadManager;
-import com.dou361.update.download.ParamsManager;
 import com.dou361.update.util.ResourceUtils;
 import com.dou361.update.util.UpdateConstants;
 import com.dou361.update.view.UpdateDialogActivity;

@@ -12,10 +12,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.dou361.download.DownloadManager;
+import com.dou361.download.ParamsManager;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
-import com.dou361.update.download.DownloadManager;
-import com.dou361.update.download.ParamsManager;
 import com.dou361.update.server.DownloadingService;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.NetworkUtil;
