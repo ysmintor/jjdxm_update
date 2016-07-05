@@ -24,7 +24,6 @@ import com.dou361.update.util.UpdateConstants;
 import com.dou361.update.util.UpdateSP;
 
 import java.io.File;
-import java.math.BigDecimal;
 
 /**
  * ========================================
@@ -124,32 +123,18 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
     }
 
     public static String getFormatSize(double size) {
-        double kiloByte = size / 1024.0D;
-        if (kiloByte < 1.0D) {
-            return size + "Byte";
-        } else {
-            double megaByte = kiloByte / 1024.0D;
-            if (megaByte < 1.0D) {
-                BigDecimal gigaByte1 = new BigDecimal(Double.toString(kiloByte));
-                return gigaByte1.setScale(2, 4).toPlainString() + "KB";
-            } else {
-                double gigaByte = megaByte / 1024.0D;
-                if (gigaByte < 1.0D) {
-                    BigDecimal teraBytes1 = new BigDecimal(Double.toString(megaByte));
-                    return teraBytes1.setScale(2, 4).toPlainString() + "MB";
-                } else {
-                    double teraBytes = gigaByte / 1024.0D;
-                    BigDecimal result4;
-                    if (teraBytes < 1.0D) {
-                        result4 = new BigDecimal(Double.toString(gigaByte));
-                        return result4.setScale(2, 4).toPlainString() + "GB";
-                    } else {
-                        result4 = new BigDecimal(teraBytes);
-                        return result4.setScale(2, 4).toPlainString() + "TB";
-                    }
-                }
-            }
+        long fileSize = (long) size;
+        String showSize = "";
+        if (fileSize >= 0 && fileSize < 1024) {
+            showSize = fileSize + "B";
+        } else if (fileSize >= 1024 && fileSize < (1024 * 1024)) {
+            showSize = Long.toString(fileSize / 1024) + "KB";
+        } else if (fileSize >= (1024 * 1024) && fileSize < (1024 * 1024 * 1024)) {
+            showSize = Long.toString(fileSize / (1024 * 1024)) + "MB";
+        } else if (fileSize >= (1024 * 1024 * 1024)) {
+            showSize = Long.toString(fileSize / (1024 * 1024 * 1024)) + "GB";
         }
+        return showSize;
     }
 
     @Override
