@@ -27,6 +27,7 @@ public class UpdateConstants {
     public static final int UPDATE_TIE = 0;
     public static final int UPDATE_INSTALL = 1;
     public static final int NOTIFICATION_ACTION = 10;
+    public static final int DOWN_ACTION = 11;
     public static final int START_DOWN = 0;
     public static final int PAUSE_DOWN = 1;
     public static final int CANCEL_DOWN = 2;

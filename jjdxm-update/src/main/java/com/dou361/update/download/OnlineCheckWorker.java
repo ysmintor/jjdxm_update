@@ -66,7 +66,6 @@ public class OnlineCheckWorker implements Runnable {
         while ((lines = bis.readLine()) != null) {
             sb.append(lines);
         }
-
         return sb.toString();
     }
 

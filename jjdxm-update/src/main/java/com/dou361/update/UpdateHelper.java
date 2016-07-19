@@ -11,6 +11,7 @@ import com.dou361.update.listener.OnlineCheckListener;
 import com.dou361.update.listener.UpdateListener;
 
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  */
@@ -19,6 +20,7 @@ public class UpdateHelper {
     private SqliteManager manager;
     private Context mContext;
     private String checkUrl;
+    private TreeMap<String, Object> checkParams;
     private String onlineUrl;
     private ParseData parserCheckJson;
     private ParseData parserOnlineJson;
@@ -29,6 +31,15 @@ public class UpdateHelper {
 
     //双重嵌套一级是否强制更新
     private boolean updateForce = false;
+
+    //二级（1.手动更新2.自动更新（有网更新，只有WiFi更新，只有WiFi下载））
+    public enum RequestType {
+        get,
+        post
+    }
+
+    //联网请求方式
+    private RequestType mRequestType = RequestType.get;
 
     //二级（1.手动更新2.自动更新（有网更新，只有WiFi更新，只有WiFi下载））
     public enum UpdateType {
@@ -62,8 +73,19 @@ public class UpdateHelper {
 
     }
 
+    public UpdateHelper setMethod(RequestType requestType) {
+        this.mRequestType = requestType;
+        return this;
+    }
+
     public UpdateHelper setCheckUrl(String url) {
         this.checkUrl = url;
+        return this;
+    }
+
+    public UpdateHelper setCheckUrl(String url, TreeMap<String, Object> params) {
+        this.checkUrl = url;
+        this.checkParams = params;
         return this;
     }
 
@@ -115,8 +137,19 @@ public class UpdateHelper {
         return checkUrl;
     }
 
+    public TreeMap<String, Object> getCheckParams() {
+        if (checkParams == null) {
+            throw new IllegalArgumentException("checkParams is null");
+        }
+        return checkParams;
+    }
+
     public String getOnlineUrl() {
         return onlineUrl;
+    }
+
+    public RequestType getRequestMethod() {
+        return mRequestType;
     }
 
     public ParseData getCheckJsonParser() {

@@ -28,17 +28,17 @@ import java.io.File;
 
 /**
  * ========================================
- * <p>
+ * <p/>
  * 版 权：dou361.com 版权所有 （C） 2015
- * <p>
+ * <p/>
  * 作 者：陈冠明
- * <p>
+ * <p/>
  * 个人网站：http://www.dou361.com
- * <p>
+ * <p/>
  * 版 本：1.0
- * <p>
+ * <p/>
  * 创建日期：2016/6/16 23:25
- * <p>
+ * <p/>
  * 描 述：原理
  * 纵线
  * 首先是点击更新时，弹出进度对话框（进度，取消和运行在后台），
@@ -48,11 +48,11 @@ import java.io.File;
  * 如果进入后台后，还在继续下载点击时重新回到原界面
  * 如果强制更新无进入后台功能
  * 如果是静默更新，安静的安装
- * <p>
- * <p>
- * <p>
+ * <p/>
+ * <p/>
+ * <p/>
  * 修订历史：
- * <p>
+ * <p/>
  * ========================================
  */
 public class DownloadingService extends Service {
@@ -65,6 +65,7 @@ public class DownloadingService extends Service {
     private String url;
     private Context mContext;
     private DownloadManager manage;
+    private int opState = 0;
 
     public Handler handler = new Handler() {
         @Override
@@ -82,7 +83,10 @@ public class DownloadingService extends Service {
                         if (total <= 0) {
                             return;
                         }
-                        notifyNotification(current, total);
+                        if (current > total) {
+                            return;
+                        }
+                        notifyNotification(current);
                         break;
                     case ParamsManager.State_FINISH:
                         File fil = new File(manage.getDownPath(), url.substring(url.lastIndexOf("/") + 1, url.length()));
@@ -99,6 +103,7 @@ public class DownloadingService extends Service {
                         }
                         break;
                     case ParamsManager.State_PAUSE:
+                        updateNotification();
                         break;
                     case ParamsManager.State_WAIT:
                         createNotification();
@@ -134,14 +139,19 @@ public class DownloadingService extends Service {
             } else if (action == UpdateConstants.PAUSE_DOWN) {
                 if (manage.isDownloading(url)) {
                     manage.pauseDownload(url);
+                    opState = 0;
+                    updateNotification();
                 } else {
                     manage.startDownload(url);
+                    opState = 1;
+                    updateNotification();
                 }
             } else if (action == UpdateConstants.CANCEL_DOWN) {
                 manage.deleteDownload(url);
+                opState = 2;
+                updateNotification();
             }
         }
-
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -159,17 +169,17 @@ public class DownloadingService extends Service {
         contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"), "0%");
 
         /**暂停和开始*/
-        Intent pauseIntent = new Intent(this, DownloadingService.class);
-        pauseIntent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.PAUSE_DOWN);
-        pauseIntent.putExtra("update", update);
-        PendingIntent pendingIntent1 = PendingIntent.getService(this, 0, pauseIntent, 0);
+        Intent downIntent = new Intent(this, DownloadingService.class);
+        downIntent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.PAUSE_DOWN);
+        downIntent.putExtra("update", update);
+        PendingIntent pendingIntent1 = PendingIntent.getService(this, UpdateConstants.PAUSE_DOWN, downIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         contentView.setOnClickPendingIntent(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_continue"), pendingIntent1);
 
         /**取消*/
         Intent cancelIntent = new Intent(this, DownloadingService.class);
         cancelIntent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.CANCEL_DOWN);
         cancelIntent.putExtra("update", update);
-        PendingIntent pendingIntent2 = PendingIntent.getService(this, 0, cancelIntent, 0);
+        PendingIntent pendingIntent2 = PendingIntent.getService(this, UpdateConstants.CANCEL_DOWN, cancelIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         contentView.setOnClickPendingIntent(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_cancel"), pendingIntent2);
 
         notification.contentView = contentView;
@@ -179,13 +189,43 @@ public class DownloadingService extends Service {
         notificationManager.notify(UpdateConstants.NOTIFICATION_ACTION, notification);
     }
 
-    private void notifyNotification(long percent, long length) {
-        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"), (percent * 100 / length) + "%");
-        contentView.setProgressBar(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"), (int) length, (int) percent, false);
+    private void updateNotification() {
+        if (opState == 0) {
+            /**暂停*/
+            if (contentView != null) {
+                contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_continue"), "开始");
+                notification.contentView = contentView;
+                notificationManager.notify(UpdateConstants.NOTIFICATION_ACTION, notification);
+            }
+        } else if (opState == 1) {
+            /**开始*/
+            if (contentView != null) {
+                contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_continue"), "暂停");
+                notification.contentView = contentView;
+                notificationManager.notify(UpdateConstants.NOTIFICATION_ACTION, notification);
+            }
+        } else if (opState == 2) {
+            /**取消*/
+            if (notificationManager == null) {
+                notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            }
+            notificationManager.cancel(UpdateConstants.NOTIFICATION_ACTION);
+        }
+    }
+
+    /**
+     * 刷新下载进度
+     */
+    private void notifyNotification(long percent) {
+        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"), percent + "%");
+        contentView.setProgressBar(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"), 100, (int) percent, false);
         notification.contentView = contentView;
         notificationManager.notify(UpdateConstants.NOTIFICATION_ACTION, notification);
     }
 
+    /**
+     * 显示安装
+     */
     private void showInstallNotificationUI(File file) {
         if (ntfBuilder == null) {
             ntfBuilder = new NotificationCompat.Builder(this);

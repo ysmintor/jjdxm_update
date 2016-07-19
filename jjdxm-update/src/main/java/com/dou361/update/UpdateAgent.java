@@ -44,7 +44,9 @@ public class UpdateAgent {
      */
     public void checkUpdate(final Activity activity) {
         UpdateWorker checkWorker = new UpdateWorker();
+        checkWorker.setRequestMethod(UpdateHelper.getInstance().getRequestMethod());
         checkWorker.setUrl(UpdateHelper.getInstance().getCheckUrl());
+        checkWorker.setParams(UpdateHelper.getInstance().getCheckParams());
         checkWorker.setParser(UpdateHelper.getInstance().getCheckJsonParser());
 
         final UpdateListener mUpdate = UpdateHelper.getInstance().getUpdateListener();

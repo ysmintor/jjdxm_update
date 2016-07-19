@@ -13,6 +13,7 @@ import com.dou361.update.listener.UpdateListener;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button update;
+    private Button ddd;
     private Context mContext;
 
     @Override
@@ -21,26 +22,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         mContext = this;
         update = (Button) findViewById(R.id.update);
+        ddd = (Button) findViewById(R.id.ddd);
         update.setOnClickListener(this);
+        ddd.setOnClickListener(this);
         UpdateHelper.getInstance()
                 .check(MainActivity.this);
     }
 
     @Override
     public void onClick(View v) {
-        UpdateHelper.getInstance()
-                .setUpdateType(UpdateHelper.UpdateType.checkupdate)
-                .setUpdateListener(new UpdateListener() {
-                    @Override
-                    public void noUpdate() {
-                        Toast.makeText(mContext, "已经是最新版本了", Toast.LENGTH_LONG).show();
-                    }
+        if (v.getId() == R.id.update) {
+            UpdateHelper.getInstance()
+                    .setUpdateType(UpdateHelper.UpdateType.checkupdate)
+                    .setUpdateListener(new UpdateListener() {
+                        @Override
+                        public void noUpdate() {
+                            Toast.makeText(mContext, "已经是最新版本了", Toast.LENGTH_LONG).show();
+                        }
 
-                    @Override
-                    public void onCheckError(int code, String errorMsg) {
-                        Toast.makeText(mContext, "检测更新失败：" + errorMsg, Toast.LENGTH_LONG).show();
-                    }
-                })
-                .check(MainActivity.this);
+                        @Override
+                        public void onCheckError(int code, String errorMsg) {
+                            Toast.makeText(mContext, "检测更新失败：" + errorMsg, Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .check(MainActivity.this);
+        } else if (v.getId() == R.id.ddd) {
+            UpdateConfig.ccc();
+        }
     }
 }
