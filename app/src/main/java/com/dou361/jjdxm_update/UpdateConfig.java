@@ -41,10 +41,28 @@ public class UpdateConfig {
     //    private static String apkFile = "http://wap.apk.anzhi.com/data3/apk/201512/20/55089e385f6e9f350e6455f995ca3452_26503500.apk";
     private static String apkFile = "http://115.159.45.251/software/feibei_live1.0.0.16070810_zs.apk";
 
+    /**
+     * {
+     "code": 0,
+     "data": {
+     "v_code": "10",
+     "v_name": "v1.0.0.16070810",
+     "v_size": 12365909,
+     "v_sha1": "7db76e18ac92bb29ff0ef012abfe178a78477534",
+     "force": false,
+     "update_content": "测试更新接口",
+     "download_url": "http://115.159.45.251/software/feibei_live1.0.0.16070810_zs.apk
+
+     "
+     }
+     }
+
+     */
+
     public static void init(Context context) {
         UpdateHelper.init(context);
         TreeMap<String, Object> params = new TreeMap<String, Object>();
-        params.put("pkname", "com.jingwang.eluxue_live");
+        params.put("pkname", "com.jingwang.eluxue_online");
         params.put("Action", "Apps");
         params.put("SecretId", "d021e4f5tac98U4df5Nb943Odd3a313d9f68");
         params.put("Region", "gz");
@@ -76,6 +94,10 @@ public class UpdateConfig {
                                 if (!job.isNull("v_code")) {
                                     // 此apk包的版本号
                                     update.setVersionCode(Integer.valueOf(job.optString("v_code")));
+                                }
+                                if (!job.isNull("v_size")) {
+                                    // 此apk包的大小
+                                    update.setApkSize(job.optLong("v_size"));
                                 }
                                 if (!job.isNull("v_name")) {
                                     // 此apk包的版本名称
