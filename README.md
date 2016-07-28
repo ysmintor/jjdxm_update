@@ -43,37 +43,17 @@ or Gradle:
 
 	compile 'com.dou361.update:jjdxm-update:x.x.x'
 
+历史版本：
+
+	compile 'com.dou361.update:jjdxm-update:1.0.3'
+	compile 'com.dou361.update:jjdxm-update:1.0.2'
+	compile 'com.dou361.update:jjdxm-update:1.0.1'
+	compile 'com.dou361.update:jjdxm-update:1.0.0'
+
 
 jjdxm-update requires at minimum Java 15 or Android 4.0.
 
 ## Get Started ##
-
-### SDK集成 ###
-在项目中添加依赖(x.x.x为对应的版本号，如1.0.0)
-
-### Android Studio集成 ###
-
-在线快速集成
-
-	compile 'com.dou361.update:jjdxm-update:x.x.x@aar'
-
-离线集成复制aar文件到libs添加引用
-
-	compile(name: 'jjdxm-update-x.x.x', ext: 'aar')
-
-需要修改布局界面可集成，并复制release文件夹下的res-x.x.x到对应工程的资源文件夹中
-
-	compile 'com.dou361.update:jjdxm-update:x.x.x'
-
-### Eclipse集成 ###
-
-复制release文件夹下面的压缩包jjdxm-update-x.x.x.jar放入工程的 libs 中和res-x.x.x文件夹放入工程对应的资源文件夹中，并添加引用
-	
-### 需要依赖v4包 ###
-
-当前jar依赖v4 jar，需要在gradle文件中配置
-
-    compile 'com.android.support:support-v4:x.x.x'
 
 ### 需要权限 ###
 
@@ -105,6 +85,8 @@ jjdxm-update requires at minimum Java 15 or Android 4.0.
 	init(this);
 
 配置接口和解析数据
+
+get请求，默认为get请求
 
 	private static String checkUrl = "你的更新接口";
     private static String onlineUrl = "你的在线参数接口";
@@ -146,6 +128,80 @@ jjdxm-update requires at minimum Java 15 or Android 4.0.
                 });
     }
 
+
+post请求
+
+	private static String checkUrl = "你的更新接口";
+    private static String onlineUrl = "你的在线参数接口";
+	public static void init(Context context) {
+        UpdateHelper.init(context);
+        TreeMap<String, Object> params = new TreeMap<String, Object>();
+        params.put("pkname", "com.jingwang.eluxue_online");
+        params.put("Action", "Apps");
+        params.put("SecretId", "d021e4f5tac98U4df5Nb943Odd3a313d9f68");
+        params.put("Region", "gz");
+        params.put("Nonce", Integer.valueOf((new Random()).nextInt(2147483647)));
+        params.put("Timestamp", Long.valueOf(System.currentTimeMillis() / 1000L));
+        params.put("RequestClient", "SDK_JAVA_1.0");
+        try {
+            params.put("Signature", Sign.sign(Sign.makeSignPlainText(params, "POST"), "FDC9BC1AA4B387CEBBF0F9355CEC2086"));
+        } catch (Exception var9) {
+            var9.printStackTrace();
+        }
+        UpdateHelper.getInstance()
+                // 可填：请求方式
+                .setMethod(UpdateHelper.RequestType.post)
+                // 必填：数据更新接口
+                .setCheckUrl(checkUrl, params)
+                // 可填：在线参数接口
+                .setOnlineUrl(onlineUrl)
+                // 必填：用于从数据更新接口获取的数据response中。解析出Update实例。以便框架内部处理
+                .setCheckJsonParser(new ParseData() {
+                    @Override
+                    public Update parse(String response) {
+                        // 此处模拟一个Update对象
+                        Update update = new Update();
+                        try {
+                            JSONObject jobj = new JSONObject(response);
+                            if (!jobj.isNull("data")) {
+                                JSONObject job = jobj.optJSONObject("data");
+                                if (!job.isNull("v_code")) {
+                                    // 此apk包的版本号
+                                    update.setVersionCode(Integer.valueOf(job.optString("v_code")));
+                                }
+                                if (!job.isNull("v_size")) {
+                                    // 此apk包的大小
+                                    update.setApkSize(job.optLong("v_size"));
+                                }
+                                if (!job.isNull("v_name")) {
+                                    // 此apk包的版本名称
+                                    update.setVersionName(job.optString("v_name"));
+                                }
+                                if (!job.isNull("update_content")) {
+                                    // 此apk包的更新内容
+                                    update.setUpdateContent(job.optString("update_content"));
+                                }
+                                if (!job.isNull("download_url")) {
+                                    // 此apk包的下载地址
+                                    update.setUpdateUrl(job.optString("download_url"));
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        // 此apk包是否为强制更新
+                        UpdateSP.setForced(false);
+                        return update;
+                    }
+                })
+                // 可填：在线参数接口
+                .setOnlineJsonParser(new ParseData() {
+                    @Override
+                    public String parse(String httpResponse) {
+                        return null;
+                    }
+                });
+    }
 
 ### 2.在mainActivity中oncreate()方法中调用 ###
 	//默认是自动检测更新
@@ -222,11 +278,13 @@ jjdxm-update requires at minimum Java 15 or Android 4.0.
 
 ## ChangeLog ##
 
-2016.06.20修复通知栏提示报错问题，修改v7.jar依赖方式，让用户自己去配置版本。下一个版本会接入在线参数和强制更新功能
+2016.07.28修复通知栏暂停取消和进度显示问题，增加post请求方式获取数据。下一个版本会接入在线参数和强制更新功能
+
+2016.06.20修复通知栏提示报错问题，修改v7.jar依赖方式，让用户自己去配置版本。
 
 2016.06.17当前版本只有四种更新方式，可以支持断点续传。
 
-
+[架包的打包引用以及冲突解决][jaraar]
 
 ## About Author ##
 
@@ -265,7 +323,8 @@ If you find any bug when using project, please report [here][issues]. Thanks for
 [project]:https://github.com/jjdxmashl/jjdxm_update/
 [issues]:https://github.com/jjdxmashl/jjdxm_update/issues/new
 [downapk]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/apk/app-debug.apk
-[lastaar]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/release/jjdxm-update-1.0.0.aar
-[lastjar]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/release/jjdxm-update-1.0.0.jar
+[lastaar]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/release/jjdxm-update-1.0.3.aar
+[lastjar]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/release/jjdxm-update-1.0.3.jar
 [icon01]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon01.png
 [icon02]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon02.png
+[jaraar]:https://github.com/jjdxmashl/jjdxm_ecodingprocess/blob/master/架包的打包引用以及冲突解决.md
