@@ -138,9 +138,6 @@ public class UpdateHelper {
     }
 
     public TreeMap<String, Object> getCheckParams() {
-        if (checkParams == null) {
-            throw new IllegalArgumentException("checkParams is null");
-        }
         return checkParams;
     }
 

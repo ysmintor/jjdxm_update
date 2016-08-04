@@ -10,7 +10,10 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        UpdateConfig.init(this);
+        /**默认的请求方式，使用get请求*/
+//        UpdateConfig.initGet(this);
+        /**post的请求方式*/
+        UpdateConfig.initPost(this);
 
     }
 }

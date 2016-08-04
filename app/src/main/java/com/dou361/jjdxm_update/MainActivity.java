@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     })
                     .check(MainActivity.this);
         } else if (v.getId() == R.id.ddd) {
-            UpdateConfig.ccc();
         }
     }
 }

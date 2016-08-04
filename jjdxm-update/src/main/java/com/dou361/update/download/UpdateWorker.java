@@ -59,7 +59,7 @@ public class UpdateWorker implements Runnable {
     public void run() {
         try {
             String response = null;
-            if (checkParams != null) {
+            if (requestType == UpdateHelper.RequestType.post) {
                 response = check(requestType, url, checkParams);
             } else {
                 response = check(requestType, url);
