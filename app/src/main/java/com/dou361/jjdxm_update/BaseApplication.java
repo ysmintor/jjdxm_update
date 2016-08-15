@@ -11,9 +11,9 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         /**默认的请求方式，使用get请求*/
-//        UpdateConfig.initGet(this);
+        UpdateConfig.initGet(this);
         /**post的请求方式*/
-        UpdateConfig.initPost(this);
+//        UpdateConfig.initPost(this);
 
     }
 }
