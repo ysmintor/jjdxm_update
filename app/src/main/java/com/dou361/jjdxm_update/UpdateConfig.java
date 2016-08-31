@@ -41,24 +41,27 @@ public class UpdateConfig {
     public static void initGet(Context context) {
         UpdateHelper.init(context);
         UpdateHelper.getInstance()
-                // 必填：数据更新接口
+                // 必填：数据更新接口，该方法一定要在setDialogLayout的前面,因为这方法里面做了重置DialogLayout的操作
                 .setCheckUrl(checkUrl)
+                // 可填：自定义更新弹出的dialog的布局样式，主要案例中的布局样式里面的id为（jjdxm_update_content、jjdxm_update_id_ok、jjdxm_update_id_cancel）的view类型和id不能修改，其他的都可以修改或删除
+                .setDialogLayout(R.layout.custom_update_dialog)
                 // 必填：用于从数据更新接口获取的数据response中。解析出Update实例。以便框架内部处理
                 .setCheckJsonParser(new ParseData() {
                     @Override
                     public Update parse(String response) {
                         // 此处模拟一个Update对象
                         Update update = new Update();
-                        // 此apk包的下载地址
+                        // 必填：此apk包的下载地址
                         update.setUpdateUrl(apkFile);
-                        // 此apk包的版本号
+                        // 必填：此apk包的版本号
                         update.setVersionCode(2);
+                        // 可填：此apk包的版本号
                         update.setApkSize(12400000);
-                        // 此apk包的版本名称
+                        // 必填：此apk包的版本名称
                         update.setVersionName("2.0");
-                        // 此apk包的更新内容
+                        // 可填：此apk包的更新内容
                         update.setUpdateContent("测试更新");
-                        // 此apk包是否为强制更新
+                        // 可填：此apk包是否为强制更新
                         UpdateSP.setForced(false);
                         return update;
                     }

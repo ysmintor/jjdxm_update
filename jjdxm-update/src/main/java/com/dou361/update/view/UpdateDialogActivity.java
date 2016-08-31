@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -17,6 +18,7 @@ import com.dou361.download.ParamsManager;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
 import com.dou361.update.server.DownloadingService;
+import com.dou361.update.util.FileUtils;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.NetworkUtil;
 import com.dou361.update.util.ResourceUtils;
@@ -27,22 +29,22 @@ import java.io.File;
 
 /**
  * ========================================
- * <p>
+ * <p/>
  * 版 权：dou361.com 版权所有 （C） 2015
- * <p>
+ * <p/>
  * 作 者：陈冠明
- * <p>
+ * <p/>
  * 个人网站：http://www.dou361.com
- * <p>
+ * <p/>
  * 版 本：1.0
- * <p>
+ * <p/>
  * 创建日期：2016/6/17
- * <p>
+ * <p/>
  * 描 述：
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * 修订历史：
- * <p>
+ * <p/>
  * ========================================
  */
 public class UpdateDialogActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -65,7 +67,12 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mContext = this;
-        setContentView(ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_update_dialog"));
+        @LayoutRes int layoutId = UpdateSP.getDialogLayout();
+        if (layoutId > 0) {
+            setContentView(layoutId);
+        } else {
+            setContentView(ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_update_dialog"));
+        }
         Intent intent = getIntent();
         mUpdate = (Update) intent.getSerializableExtra(UpdateConstants.DATA_UPDATE);
         mAction = intent.getIntExtra(UpdateConstants.DATA_ACTION, 0);
@@ -76,11 +83,13 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         jjdxm_update_id_check = (CheckBox) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_check"));
         jjdxm_update_id_ok = (Button) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_ok"));
         jjdxm_update_id_cancel = (Button) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_cancel"));
-        if (NetworkUtil.isConnectedByWifi()) {
-            //WiFi环境
-            jjdxm_update_wifi_indicator.setVisibility(View.INVISIBLE);
-        } else {
-            jjdxm_update_wifi_indicator.setVisibility(View.VISIBLE);
+        if (jjdxm_update_wifi_indicator != null) {
+            if (NetworkUtil.isConnectedByWifi()) {
+                //WiFi环境
+                jjdxm_update_wifi_indicator.setVisibility(View.INVISIBLE);
+            } else {
+                jjdxm_update_wifi_indicator.setVisibility(View.VISIBLE);
+            }
         }
         finshDown = (DownloadManager.getInstance(mContext).state(mUpdate.getUpdateUrl()) == ParamsManager.State_FINISH);
         if (finshDown) {
@@ -89,15 +98,25 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
                 String url = mUpdate.getUpdateUrl();
                 mPath = DownloadManager.getInstance(mContext).getDownPath() + File.separator + url.substring(url.lastIndexOf("/") + 1, url.length());
             }
-            text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_dialog_installapk")) + "";
+            if (mUpdate.getApkSize() > 0) {
+                text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_dialog_installapk")) + "";
+            } else {
+                text = "";
+            }
         } else {
-            text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_targetsize")) + getFormatSize(mUpdate.getApkSize());
+            if (mUpdate.getApkSize() > 0) {
+                text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_targetsize")) + FileUtils.HumanReadableFilesize(mUpdate.getApkSize());
+            } else {
+                text = "";
+            }
         }
-        if (UpdateHelper.getInstance().getUpdateType() == UpdateHelper.UpdateType.checkupdate) {
-            //手动更新
-            jjdxm_update_id_check.setVisibility(View.GONE);
-        } else {
-            jjdxm_update_id_check.setVisibility(View.VISIBLE);
+        if (jjdxm_update_id_check != null) {
+            if (UpdateHelper.getInstance().getUpdateType() == UpdateHelper.UpdateType.checkupdate) {
+                //手动更新
+                jjdxm_update_id_check.setVisibility(View.GONE);
+            } else {
+                jjdxm_update_id_check.setVisibility(View.VISIBLE);
+            }
         }
         if (mAction == 0) {
             updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
@@ -117,24 +136,11 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
             jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_installnow"));
             jjdxm_update_content.setText(updateContent);
         }
-        jjdxm_update_id_check.setOnCheckedChangeListener(this);
+        if (jjdxm_update_id_check != null) {
+            jjdxm_update_id_check.setOnCheckedChangeListener(this);
+        }
         jjdxm_update_id_ok.setOnClickListener(this);
         jjdxm_update_id_cancel.setOnClickListener(this);
-    }
-
-    public static String getFormatSize(double size) {
-        long fileSize = (long) size;
-        String showSize = "";
-        if (fileSize >= 0 && fileSize < 1024) {
-            showSize = fileSize + "B";
-        } else if (fileSize >= 1024 && fileSize < (1024 * 1024)) {
-            showSize = Long.toString(fileSize / 1024) + "KB";
-        } else if (fileSize >= (1024 * 1024) && fileSize < (1024 * 1024 * 1024)) {
-            showSize = Long.toString(fileSize / (1024 * 1024)) + "MB";
-        } else if (fileSize >= (1024 * 1024 * 1024)) {
-            showSize = Long.toString(fileSize / (1024 * 1024 * 1024)) + "GB";
-        }
-        return showSize;
     }
 
     @Override

@@ -5,7 +5,6 @@
                 android:background="#99232323">
 
     <LinearLayout
-        android:id="@+id/jjdxm_update_frame"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -35,17 +34,6 @@
                 android:text="@string/jjdxm_update_updatetitle"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#008bea"/>
-
-            <Button
-                android:id="@+id/jjdxm_update_id_close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/jjdxm_update_button_close_bg_selector"
-                android:focusable="true"
-                android:visibility="gone"/>
 
         </RelativeLayout>
 

@@ -40,6 +40,11 @@ public class UpdateSP {
         return sp.getBoolean("_update_version_forced", false);
     }
 
+    public static int getDialogLayout() {
+        SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
+        return sp.getInt("_update_version_layout_id", 0);
+    }
+
     public static void setIgnore(String version) {
         SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
@@ -51,6 +56,13 @@ public class UpdateSP {
         SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("_update_version_forced", def);
+        editor.commit();
+    }
+
+    public static void setDialogLayout(int def) {
+        SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("_update_version_layout_id", def);
         editor.commit();
     }
 }

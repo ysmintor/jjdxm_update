@@ -9,6 +9,7 @@ import com.dou361.download.DownloadModel;
 import com.dou361.download.SqliteManager;
 import com.dou361.update.listener.OnlineCheckListener;
 import com.dou361.update.listener.UpdateListener;
+import com.dou361.update.util.UpdateSP;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -31,6 +32,12 @@ public class UpdateHelper {
 
     //双重嵌套一级是否强制更新
     private boolean updateForce = false;
+
+    //设置更新对话框的布局
+    public UpdateHelper setDialogLayout(int view) {
+        UpdateSP.setDialogLayout(view);
+        return this;
+    }
 
     //二级（1.手动更新2.自动更新（有网更新，只有WiFi更新，只有WiFi下载））
     public enum RequestType {
@@ -79,6 +86,7 @@ public class UpdateHelper {
     }
 
     public UpdateHelper setCheckUrl(String url) {
+        UpdateSP.setDialogLayout(0);
         this.checkUrl = url;
         return this;
     }

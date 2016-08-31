@@ -105,6 +105,42 @@ jjdxm-update requires at minimum Java 15 or Android 4.0.
 
 这里必须配置一个在线更新接口及其的数据返回结构的解析，可选的是在线参数接口及其数据返回结构的解析，在线参数可以随机定义零个或多个不同意义的参数来达到在线修改apk的部分特性。
 
+（1）创建一个自动更新的配置文件
+
+    public class UpdateConfig {
+
+        private static String checkUrl = "http://115.159.45.251:8080/software/v2/index";
+        private static String onlineUrl = "http://www.baidu.com";
+        private static String apkFile = "http://wap.apk.anzhi.com/data3/apk/201512/20/55089e385f6e9f350e6455f995ca3452_26503500.apk";
+
+	    public static void init(Context context) {
+	        UpdateHelper.init(context);
+	        UpdateHelper.getInstance()
+	                // 必填：数据更新接口
+	                .setCheckUrl(checkUrl)
+	                // 必填：用于从数据更新接口获取的数据response中。解析出Update实例。以便框架内部处理
+	                .setCheckJsonParser(new ParseData() {
+	                    @Override
+	                    public Update parse(String response) {
+	                        // 此处模拟一个Update对象
+	                        Update update = new Update();
+	                        // 此apk包的下载地址
+	                        update.setUpdateUrl(apkFile);
+	                        // 此apk包的版本号
+	                        update.setVersionCode(2);
+	                        update.setApkSize(12400000);
+	                        // 此apk包的版本名称
+	                        update.setVersionName("2.0");
+	                        // 此apk包的更新内容
+	                        update.setUpdateContent("测试更新");
+	                        // 此apk包是否为强制更新
+	                        UpdateSP.setForced(false);
+	                        return update;
+	                    }
+	                });
+	    }
+	}
+
 在Application的oncreate方法中调用
     
 	init(this);
