@@ -84,13 +84,13 @@ public class UpdateWorker implements Runnable {
     protected String check(UpdateHelper.RequestType requestType, String urlStr) throws Exception {
         URL getUrl = new URL(urlStr);
         HttpURLConnection urlConn = (HttpURLConnection) getUrl.openConnection();
-        urlConn.setDoInput(true);
-        urlConn.setDoOutput(true);
-        urlConn.setUseCaches(false);
         urlConn.setConnectTimeout(10000);
         if (requestType == UpdateHelper.RequestType.get) {
             urlConn.setRequestMethod("GET");
         } else {
+            urlConn.setDoInput(true);
+            urlConn.setDoOutput(true);
+            urlConn.setUseCaches(false);
             urlConn.setRequestMethod("POST");
         }
         urlConn.connect();
