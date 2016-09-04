@@ -104,7 +104,7 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 	        UpdateHelper.init(context);
 	        UpdateHelper.getInstance()
 					// 可填：请求方式,默认为get请求
-                	.setMethod(UpdateHelper.RequestType.get)
+                	.setMethod(RequestType.get)
 	                // 必填：数据更新接口，方法有重载带参数的setCheckUrl(checkUrl, params)
 	                .setCheckUrl(checkUrl)
 	                // 可填：在线参数接口，方法有重载带参数的setOnlineUrl(onlineUrl, params)
@@ -309,7 +309,8 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 	UpdateConfig.init(this);
 
 ### step4 ###
-(4)在mainActivity中oncreate()方法中调用
+(1)在mainActivity中oncreate()方法中调用
+
 	//默认是自动检测更新
 	UpdateHelper.getInstance()
                 .check(MainActivity.this);
@@ -318,7 +319,7 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 
 	//手动检测更新
 	UpdateHelper.getInstance()
-                .setUpdateType(UpdateHelper.UpdateType.checkupdate)
+                .setUpdateType(UpdateType.checkupdate)
                 .setUpdateListener(new UpdateListener() {
                     @Override
                     public void noUpdate() {
@@ -335,19 +336,19 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 ### 1.几种方式的调用 ###
 
 	//有网更新
-	UpdateHelper.UpdateType.checkupdate,
+	UpdateType.checkupdate,
 	//自动更新
-    UpdateHelper.UpdateType.autoupdate,
+    UpdateType.autoupdate,
 	//只有WiFi更新
-    UpdateHelper.UpdateType.autowifiupdate,
+    UpdateType.autowifiupdate,
 	//只有WiFi下载
-    UpdateHelper.UpdateType.autowifidown
+    UpdateType.autowifidown
 
 调用方式这里只举例静默更新，其他方式类似
 
 	/静默更新
 	UpdateHelper.getInstance()
-				.setUpdateType(UpdateHelper.UpdateType.autowifidown)
+				.setUpdateType(UpdateType.autowifidown)
                 .check(MainActivity.this);
 
 ### 2.更新监听回调UpdateListener，主要有四个方法 ###
