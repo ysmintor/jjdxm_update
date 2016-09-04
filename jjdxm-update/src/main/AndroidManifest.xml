@@ -12,7 +12,11 @@
         <!--jjdxm_update更新 start-->
         <activity
             android:name="com.dou361.update.view.UpdateDialogActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        </activity>
+        <activity
+            android:name="com.dou361.update.view.DownloadDialogActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
 
         <service android:name="com.dou361.update.server.DownloadingService"/>

@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
@@ -20,6 +21,7 @@ import com.dou361.download.DownloadManager;
 import com.dou361.download.ParamsManager;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
+import com.dou361.update.type.UpdateType;
 import com.dou361.update.util.ResourceUtils;
 import com.dou361.update.util.UpdateConstants;
 import com.dou361.update.view.UpdateDialogActivity;
@@ -28,17 +30,17 @@ import java.io.File;
 
 /**
  * ========================================
- * <p/>
+ * <p>
  * 版 权：dou361.com 版权所有 （C） 2015
- * <p/>
+ * <p>
  * 作 者：陈冠明
- * <p/>
+ * <p>
  * 个人网站：http://www.dou361.com
- * <p/>
+ * <p>
  * 版 本：1.0
- * <p/>
+ * <p>
  * 创建日期：2016/6/16 23:25
- * <p/>
+ * <p>
  * 描 述：原理
  * 纵线
  * 首先是点击更新时，弹出进度对话框（进度，取消和运行在后台），
@@ -48,11 +50,11 @@ import java.io.File;
  * 如果进入后台后，还在继续下载点击时重新回到原界面
  * 如果强制更新无进入后台功能
  * 如果是静默更新，安静的安装
- * <p/>
- * <p/>
- * <p/>
+ * <p>
+ * <p>
+ * <p>
  * 修订历史：
- * <p/>
+ * <p>
  * ========================================
  */
 public class DownloadingService extends Service {
@@ -87,11 +89,12 @@ public class DownloadingService extends Service {
                             return;
                         }
                         notifyNotification(current);
+                        sendBroadcastType(current);
                         break;
                     case ParamsManager.State_FINISH:
                         File fil = new File(manage.getDownPath(), url.substring(url.lastIndexOf("/") + 1, url.length()));
                         showInstallNotificationUI(fil);
-                        if (UpdateHelper.getInstance().getUpdateType() == UpdateHelper.UpdateType.autowifidown) {
+                        if (UpdateHelper.getInstance().getUpdateType() == UpdateType.autowifidown) {
                             installApk(mContext, fil);
                         } else {
                             Intent intent = new Intent(mContext, UpdateDialogActivity.class);
@@ -101,6 +104,7 @@ public class DownloadingService extends Service {
                             intent.putExtra(UpdateConstants.SAVE_PATH, fil.getAbsolutePath());
                             startActivity(intent);
                         }
+                        sendBroadcastType(100);
                         break;
                     case ParamsManager.State_PAUSE:
                         updateNotification();
@@ -261,4 +265,11 @@ public class DownloadingService extends Service {
                 "application/vnd.android.package-archive");
         context.startActivity(intent);
     }
+
+    private void sendBroadcastType(long type) {
+        Intent intent = new Intent("com.dou361.update.downloadBroadcast");
+        intent.putExtra("type", type);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
 }

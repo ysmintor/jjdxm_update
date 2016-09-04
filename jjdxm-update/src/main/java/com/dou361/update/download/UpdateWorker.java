@@ -4,6 +4,8 @@ import com.dou361.update.ParseData;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
 import com.dou361.update.listener.UpdateListener;
+import com.dou361.update.type.RequestType;
+import com.dou361.update.type.UpdateType;
 import com.dou361.update.util.HandlerUtil;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.UpdateSP;
@@ -33,9 +35,9 @@ public class UpdateWorker implements Runnable {
     protected TreeMap<String, Object> checkParams;
     protected UpdateListener checkCB;
     protected ParseData parser;
-    private UpdateHelper.RequestType requestType;
+    private RequestType requestType;
 
-    public void setRequestMethod(UpdateHelper.RequestType requestType) {
+    public void setRequestMethod(RequestType requestType) {
         this.requestType = requestType;
     }
 
@@ -59,7 +61,7 @@ public class UpdateWorker implements Runnable {
     public void run() {
         try {
             String response = null;
-            if (requestType == UpdateHelper.RequestType.post) {
+            if (requestType == RequestType.post) {
                 response = check(requestType, url, checkParams);
             } else {
                 response = check(requestType, url);
@@ -69,7 +71,8 @@ public class UpdateWorker implements Runnable {
                 throw new IllegalArgumentException("parse response to update failed by " + parser.getClass().getCanonicalName());
             }
             int curVersion = InstallUtil.getApkVersion(UpdateHelper.getInstance().getContext());
-            if (parse.getVersionCode() > curVersion && (!UpdateSP.isIgnore(parse.getVersionCode() + "") || UpdateHelper.getInstance().getUpdateType() == UpdateHelper.UpdateType.checkupdate)) {
+            if (parse.getVersionCode() > curVersion && (!UpdateSP.isIgnore(parse.getVersionCode() + "") || UpdateHelper.getInstance().getUpdateType() == UpdateType.checkupdate)) {
+                UpdateSP.setForced(parse.isForce());
                 sendHasUpdate(parse);
             } else {
                 sendNoUpdate();
@@ -81,11 +84,11 @@ public class UpdateWorker implements Runnable {
         }
     }
 
-    protected String check(UpdateHelper.RequestType requestType, String urlStr) throws Exception {
+    protected String check(RequestType requestType, String urlStr) throws Exception {
         URL getUrl = new URL(urlStr);
         HttpURLConnection urlConn = (HttpURLConnection) getUrl.openConnection();
         urlConn.setConnectTimeout(10000);
-        if (requestType == UpdateHelper.RequestType.get) {
+        if (requestType == RequestType.get) {
             urlConn.setRequestMethod("GET");
         } else {
             urlConn.setDoInput(true);
@@ -111,7 +114,7 @@ public class UpdateWorker implements Runnable {
         return sb.toString();
     }
 
-    protected String check(UpdateHelper.RequestType requestType, String url, Map<String, Object> requestParams) {
+    protected String check(RequestType requestType, String url, Map<String, Object> requestParams) {
 
         if (requestParams == null) {
             requestParams = new TreeMap();
@@ -135,7 +138,7 @@ public class UpdateWorker implements Runnable {
         }
 
         try {
-            if (requestType == UpdateHelper.RequestType.get) {
+            if (requestType == RequestType.get) {
                 if (url.indexOf(63) > 0) {
                     url = url + '&' + paramStr;
                 } else {
@@ -163,7 +166,7 @@ public class UpdateWorker implements Runnable {
             ((URLConnection) connection).setRequestProperty("connection", "Keep-Alive");
             ((URLConnection) connection).setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             ((URLConnection) connection).setConnectTimeout(10000);
-            if (requestType == UpdateHelper.RequestType.post) {
+            if (requestType == RequestType.post) {
                 ((HttpURLConnection) connection).setRequestMethod("POST");
                 ((URLConnection) connection).setDoOutput(true);
                 ((URLConnection) connection).setDoInput(true);

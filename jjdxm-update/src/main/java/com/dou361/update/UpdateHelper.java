@@ -7,8 +7,11 @@ import android.text.TextUtils;
 import com.dou361.download.DownloadManager;
 import com.dou361.download.DownloadModel;
 import com.dou361.download.SqliteManager;
+import com.dou361.update.listener.ForceListener;
 import com.dou361.update.listener.OnlineCheckListener;
 import com.dou361.update.listener.UpdateListener;
+import com.dou361.update.type.RequestType;
+import com.dou361.update.type.UpdateType;
 import com.dou361.update.util.UpdateSP;
 
 import java.util.List;
@@ -22,16 +25,15 @@ public class UpdateHelper {
     private Context mContext;
     private String checkUrl;
     private TreeMap<String, Object> checkParams;
+    private TreeMap<String, Object> onlineParams;
     private String onlineUrl;
     private ParseData parserCheckJson;
     private ParseData parserOnlineJson;
 
     private static UpdateHelper instance;
     private UpdateListener mUpdateListener;
+    private ForceListener mForceListener;
     private OnlineCheckListener mOnlineCheckListener;
-
-    //双重嵌套一级是否强制更新
-    private boolean updateForce = false;
 
     //设置更新对话框的布局
     public UpdateHelper setDialogLayout(int view) {
@@ -39,22 +41,8 @@ public class UpdateHelper {
         return this;
     }
 
-    //二级（1.手动更新2.自动更新（有网更新，只有WiFi更新，只有WiFi下载））
-    public enum RequestType {
-        get,
-        post
-    }
-
     //联网请求方式
     private RequestType mRequestType = RequestType.get;
-
-    //二级（1.手动更新2.自动更新（有网更新，只有WiFi更新，只有WiFi下载））
-    public enum UpdateType {
-        checkupdate,
-        autoupdate,
-        autowifiupdate,
-        autowifidown
-    }
 
     //默认需要检测更新
     private UpdateType mUpdateType = UpdateType.autoupdate;
@@ -102,8 +90,19 @@ public class UpdateHelper {
         return this;
     }
 
+    public UpdateHelper setOnlineUrl(String url, TreeMap<String, Object> params) {
+        this.onlineUrl = url;
+        this.onlineParams = params;
+        return this;
+    }
+
     public UpdateHelper setUpdateListener(UpdateListener listener) {
         this.mUpdateListener = listener;
+        return this;
+    }
+
+    public UpdateHelper setForceListener(ForceListener listener) {
+        this.mForceListener = listener;
         return this;
     }
 
@@ -127,6 +126,11 @@ public class UpdateHelper {
         return this;
     }
 
+    public UpdateHelper setForced(boolean isForce) {
+        UpdateSP.setForced(isForce);
+        return this;
+    }
+
     public Context getContext() {
         if (mContext == null) {
             throw new RuntimeException("should call UpdateConfig.install first");
@@ -145,12 +149,16 @@ public class UpdateHelper {
         return checkUrl;
     }
 
-    public TreeMap<String, Object> getCheckParams() {
-        return checkParams;
-    }
-
     public String getOnlineUrl() {
         return onlineUrl;
+    }
+
+    public TreeMap<String, Object> getOnlineParams() {
+        return onlineParams;
+    }
+
+    public TreeMap<String, Object> getCheckParams() {
+        return checkParams;
     }
 
     public RequestType getRequestMethod() {
@@ -177,7 +185,12 @@ public class UpdateHelper {
         return mUpdateListener;
     }
 
+    public ForceListener getForceListener() {
+        return mForceListener;
+    }
+
     public OnlineCheckListener getOnlineCheckListener() {
         return mOnlineCheckListener;
     }
+
 }

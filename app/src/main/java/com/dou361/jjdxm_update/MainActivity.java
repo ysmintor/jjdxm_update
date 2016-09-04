@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.dou361.update.UpdateHelper;
+import com.dou361.update.type.UpdateType;
+import com.dou361.update.listener.ForceListener;
 import com.dou361.update.listener.UpdateListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -26,6 +28,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         update.setOnClickListener(this);
         ddd.setOnClickListener(this);
         UpdateHelper.getInstance()
+                .setForceListener(new ForceListener() {
+                    @Override
+                    public void onUserCancel(boolean force) {
+                        if (force) {
+                            //退出应用
+                            finish();
+                        }
+                    }
+                })
                 .check(MainActivity.this);
     }
 
@@ -33,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (v.getId() == R.id.update) {
             UpdateHelper.getInstance()
-                    .setUpdateType(UpdateHelper.UpdateType.checkupdate)
+                    .setUpdateType(UpdateType.checkupdate)
                     .setUpdateListener(new UpdateListener() {
                         @Override
                         public void noUpdate() {

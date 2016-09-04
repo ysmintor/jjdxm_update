@@ -56,7 +56,12 @@ public class FileUtils {
                 break;
             }
         }
-        BigDecimal a = new BigDecimal(size + "");
-        return a.setScale(2, BigDecimal.ROUND_HALF_UP) + units[i];
+        try {
+            BigDecimal a = new BigDecimal(size + "");
+            return a.setScale(2, BigDecimal.ROUND_HALF_UP) + units[i];
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }

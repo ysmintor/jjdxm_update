@@ -26,7 +26,14 @@ public class Update implements Serializable {
      * update name
      */
     private String versionName;
+    /**
+     * update name
+     */
     private long apkSize;
+    /**
+     * update force
+     */
+    private boolean force;
 
     public String getOriginal() {
         return original;
@@ -74,5 +81,13 @@ public class Update implements Serializable {
 
     public void setApkSize(long apkSize) {
         this.apkSize = apkSize;
+    }
+
+    public boolean isForce() {
+        return force;
+    }
+
+    public void setForce(boolean force) {
+        this.force = force;
     }
 }

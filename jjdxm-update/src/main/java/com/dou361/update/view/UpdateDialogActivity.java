@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import com.dou361.download.ParamsManager;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
 import com.dou361.update.server.DownloadingService;
+import com.dou361.update.type.UpdateType;
 import com.dou361.update.util.FileUtils;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.NetworkUtil;
@@ -29,22 +31,22 @@ import java.io.File;
 
 /**
  * ========================================
- * <p/>
+ * <p>
  * 版 权：dou361.com 版权所有 （C） 2015
- * <p/>
+ * <p>
  * 作 者：陈冠明
- * <p/>
+ * <p>
  * 个人网站：http://www.dou361.com
- * <p/>
+ * <p>
  * 版 本：1.0
- * <p/>
+ * <p>
  * 创建日期：2016/6/17
- * <p/>
+ * <p>
  * 描 述：
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * 修订历史：
- * <p/>
+ * <p>
  * ========================================
  */
 public class UpdateDialogActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -111,11 +113,11 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
             }
         }
         if (jjdxm_update_id_check != null) {
-            if (UpdateHelper.getInstance().getUpdateType() == UpdateHelper.UpdateType.checkupdate) {
+            if (UpdateHelper.getInstance().getUpdateType() == UpdateType.checkupdate) {
                 //手动更新
                 jjdxm_update_id_check.setVisibility(View.GONE);
             } else {
-                jjdxm_update_id_check.setVisibility(View.VISIBLE);
+                jjdxm_update_id_check.setVisibility(UpdateSP.isForced() ? View.GONE : View.VISIBLE);
             }
         }
         if (mAction == 0) {
@@ -149,19 +151,30 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         if (id == ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_ok")) {
             if (finshDown) {
                 InstallUtil.installApk(mContext, mPath);
+                finish();
+                if (UpdateHelper.getInstance().getForceListener() != null) {
+                    UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
+                }
             } else {
                 Intent intent = new Intent(mContext, DownloadingService.class);
                 intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.START_DOWN);
                 intent.putExtra(UpdateConstants.DATA_UPDATE, mUpdate);
                 startService(intent);
+                if (UpdateSP.isForced()) {
+                    Intent intenta = new Intent(mContext, DownloadDialogActivity.class);
+                    startActivity(intenta);
+                } else {
+                    if (UpdateHelper.getInstance().getForceListener() != null) {
+                        UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
+                    }
+                }
+                finish();
+            }
+        } else if (id == ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_cancel")) {
+            if (UpdateHelper.getInstance().getForceListener() != null) {
+                UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
             }
             finish();
-        } else if (id == ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_cancel")) {
-            if (UpdateSP.isForced()) {
-                finish();
-            } else {
-                finish();
-            }
         }
     }
 
@@ -169,4 +182,17 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         UpdateSP.setIgnore(isChecked ? mUpdate.getVersionCode() + "" : "");
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && UpdateSP.isForced()) {
+            finish();
+            if (UpdateHelper.getInstance().getForceListener() != null) {
+                UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 }

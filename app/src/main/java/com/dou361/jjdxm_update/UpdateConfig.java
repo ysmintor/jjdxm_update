@@ -5,7 +5,7 @@ import android.content.Context;
 import com.dou361.update.ParseData;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
-import com.dou361.update.util.UpdateSP;
+import com.dou361.update.type.RequestType;
 
 import org.json.JSONObject;
 
@@ -34,13 +34,16 @@ import java.util.TreeMap;
  */
 public class UpdateConfig {
 
-    private static String checkUrl = "http://115.159.45.251:8080/software/v2/index";
+    private static String checkUrl = "http://www.baidu.com";
     private static String onlineUrl = "http://www.baidu.com";
     private static String apkFile = "http://wap.apk.anzhi.com/data3/apk/201512/20/55089e385f6e9f350e6455f995ca3452_26503500.apk";
 
+    /**get方式请求的案例*/
     public static void initGet(Context context) {
         UpdateHelper.init(context);
         UpdateHelper.getInstance()
+                // 可填：请求方式
+                .setMethod(RequestType.post)
                 // 必填：数据更新接口，该方法一定要在setDialogLayout的前面,因为这方法里面做了重置DialogLayout的操作
                 .setCheckUrl(checkUrl)
                 // 可填：自定义更新弹出的dialog的布局样式，主要案例中的布局样式里面的id为（jjdxm_update_content、jjdxm_update_id_ok、jjdxm_update_id_cancel）的view类型和id不能修改，其他的都可以修改或删除
@@ -62,7 +65,7 @@ public class UpdateConfig {
                         // 可填：此apk包的更新内容
                         update.setUpdateContent("测试更新");
                         // 可填：此apk包是否为强制更新
-                        UpdateSP.setForced(false);
+                        update.setForce(false);
                         return update;
                     }
                 });
@@ -83,8 +86,8 @@ public class UpdateConfig {
      * "
      * }
      * }
+     * post方式请求的案例
      */
-
     public static void initPost(Context context) {
         UpdateHelper.init(context);
         TreeMap<String, Object> params = new TreeMap<String, Object>();
@@ -102,7 +105,7 @@ public class UpdateConfig {
         }
         UpdateHelper.getInstance()
                 // 可填：请求方式
-                .setMethod(UpdateHelper.RequestType.post)
+                .setMethod(RequestType.post)
                 // 必填：数据更新接口
                 .setCheckUrl(checkUrl, params)
                 // 可填：在线参数接口
@@ -137,12 +140,14 @@ public class UpdateConfig {
                                     // 此apk包的下载地址
                                     update.setUpdateUrl(job.optString("download_url"));
                                 }
+                                if (!job.isNull("force")) {
+                                    // 此apk包的下载地址
+                                    update.setForce(job.optBoolean("force", false));
+                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        // 此apk包是否为强制更新
-                        UpdateSP.setForced(false);
                         return update;
                     }
                 })
