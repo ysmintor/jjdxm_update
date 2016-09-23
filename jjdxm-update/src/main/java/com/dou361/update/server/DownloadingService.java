@@ -30,17 +30,17 @@ import java.io.File;
 
 /**
  * ========================================
- * <p>
+ * <p/>
  * 版 权：dou361.com 版权所有 （C） 2015
- * <p>
+ * <p/>
  * 作 者：陈冠明
- * <p>
+ * <p/>
  * 个人网站：http://www.dou361.com
- * <p>
+ * <p/>
  * 版 本：1.0
- * <p>
+ * <p/>
  * 创建日期：2016/6/16 23:25
- * <p>
+ * <p/>
  * 描 述：原理
  * 纵线
  * 首先是点击更新时，弹出进度对话框（进度，取消和运行在后台），
@@ -50,11 +50,11 @@ import java.io.File;
  * 如果进入后台后，还在继续下载点击时重新回到原界面
  * 如果强制更新无进入后台功能
  * 如果是静默更新，安静的安装
- * <p>
- * <p>
- * <p>
+ * <p/>
+ * <p/>
+ * <p/>
  * 修订历史：
- * <p>
+ * <p/>
  * ========================================
  */
 public class DownloadingService extends Service {
@@ -93,18 +93,31 @@ public class DownloadingService extends Service {
                         break;
                     case ParamsManager.State_FINISH:
                         File fil = new File(manage.getDownPath(), url.substring(url.lastIndexOf("/") + 1, url.length()));
-                        showInstallNotificationUI(fil);
-                        if (UpdateHelper.getInstance().getUpdateType() == UpdateType.autowifidown) {
-                            installApk(mContext, fil);
+                        if (fil.exists() && fil.length() > 0) {
+                            //下载完成
+                            showInstallNotificationUI(fil);
+                            if (UpdateHelper.getInstance().getUpdateType() == UpdateType.autowifidown) {
+                                installApk(mContext, fil);
+                            } else {
+                                Intent intent = new Intent(mContext, UpdateDialogActivity.class);
+                                intent.putExtra(UpdateConstants.DATA_UPDATE, update);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.UPDATE_INSTALL);
+                                intent.putExtra(UpdateConstants.SAVE_PATH, fil.getAbsolutePath());
+                                startActivity(intent);
+                            }
+                            sendBroadcastType(100);
                         } else {
+                            //文件可能被删除
+                            if (update != null) {
+                                manage.deleteAllDownload();
+                            }
                             Intent intent = new Intent(mContext, UpdateDialogActivity.class);
-                            intent.putExtra(UpdateConstants.DATA_UPDATE, update);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.UPDATE_INSTALL);
-                            intent.putExtra(UpdateConstants.SAVE_PATH, fil.getAbsolutePath());
+                            intent.putExtra(UpdateConstants.DATA_UPDATE, update);
+                            intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.UPDATE_TIE);
                             startActivity(intent);
                         }
-                        sendBroadcastType(100);
                         break;
                     case ParamsManager.State_PAUSE:
                         updateNotification();

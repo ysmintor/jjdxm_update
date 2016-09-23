@@ -9,7 +9,7 @@ ext {
     jjdxm_groupId = 'com.dou361.update'
     jjdxm_artifactId = 'jjdxm-update'
 
-    jjdxm_libraryVersion = '1.0.4'
+    jjdxm_libraryVersion = '1.0.5'
     jjdxm_libraryName = 'jjdxm-update'
     jjdxm_libraryDescription = 'this is a update library of the application'
 
@@ -55,7 +55,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile rootProject.ext.jjdxm_v4
-    compile 'com.dou361.download:jjdxm-download:1.0.2'
+    compile 'com.dou361.download:jjdxm-download:1.0.3'
 }
 
 //apply from: 'https://raw.githubusercontent.com/jjdxmashl/jjdxm_ecodingprocess/master/bulidlib.gradle'

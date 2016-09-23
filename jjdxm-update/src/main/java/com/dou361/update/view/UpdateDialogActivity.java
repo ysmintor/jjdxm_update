@@ -15,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.dou361.download.DownloadManager;
+import com.dou361.download.DownloadModel;
 import com.dou361.download.ParamsManager;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
@@ -31,22 +32,22 @@ import java.io.File;
 
 /**
  * ========================================
- * <p>
+ * <p/>
  * 版 权：dou361.com 版权所有 （C） 2015
- * <p>
+ * <p/>
  * 作 者：陈冠明
- * <p>
+ * <p/>
  * 个人网站：http://www.dou361.com
- * <p>
+ * <p/>
  * 版 本：1.0
- * <p>
+ * <p/>
  * 创建日期：2016/6/17
- * <p>
+ * <p/>
  * 描 述：
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * 修订历史：
- * <p>
+ * <p/>
  * ========================================
  */
 public class UpdateDialogActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -93,24 +94,52 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
                 jjdxm_update_wifi_indicator.setVisibility(View.VISIBLE);
             }
         }
-        finshDown = (DownloadManager.getInstance(mContext).state(mUpdate.getUpdateUrl()) == ParamsManager.State_FINISH);
-        if (finshDown) {
-            //已经下载
-            if (TextUtils.isEmpty(mPath)) {
-                String url = mUpdate.getUpdateUrl();
-                mPath = DownloadManager.getInstance(mContext).getDownPath() + File.separator + url.substring(url.lastIndexOf("/") + 1, url.length());
+        if (TextUtils.isEmpty(mPath)) {
+            String url = mUpdate.getUpdateUrl();
+            mPath = DownloadManager.getInstance(mContext).getDownPath() + File.separator + url.substring(url.lastIndexOf("/") + 1, url.length());
+        }
+        if (mAction == 0) {
+            DownloadModel dd = DownloadManager.getInstance(mContext).getDownloadByUrl(mUpdate.getUpdateUrl());
+            if (dd != null) {
+                finshDown = (dd.getDOWNLOAD_STATE() == ParamsManager.State_FINISH);
+                File fil = new File(mPath);
+                if (finshDown && fil.exists() && (fil.length() + "").equals(dd.getDOWNLOAD_TOTALSIZE())) {
+                    finshDown = true;
+                } else {
+                    finshDown = false;
+                }
             }
+        } else {
+            finshDown = true;
+        }
+        if (finshDown) {
+            //完成下载
             if (mUpdate.getApkSize() > 0) {
                 text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_dialog_installapk")) + "";
             } else {
                 text = "";
             }
+            updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
+                    + mUpdate.getVersionName() + "\n"
+                    + text + "\n\n"
+                    + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
+                    "\n";
+            jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_installnow"));
+            jjdxm_update_content.setText(updateContent);
         } else {
+            //有更新下载
             if (mUpdate.getApkSize() > 0) {
                 text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_targetsize")) + FileUtils.HumanReadableFilesize(mUpdate.getApkSize());
             } else {
                 text = "";
             }
+            updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
+                    + mUpdate.getVersionName() + "\n"
+                    + text + "\n\n"
+                    + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
+                    "\n";
+            jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatenow"));
+            jjdxm_update_content.setText(updateContent);
         }
         if (jjdxm_update_id_check != null) {
             if (UpdateHelper.getInstance().getUpdateType() == UpdateType.checkupdate) {
@@ -120,24 +149,7 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
                 jjdxm_update_id_check.setVisibility(UpdateSP.isForced() ? View.GONE : View.VISIBLE);
             }
         }
-        if (mAction == 0) {
-            updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
-                    + mUpdate.getVersionName() + "\n"
-                    + text + "\n\n"
-                    + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
-                    "\n";
-            jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatenow"));
-            jjdxm_update_content.setText(updateContent);
-        } else {
-            finshDown = true;
-            updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
-                    + mUpdate.getVersionName() + "\n"
-                    + text + "\n\n"
-                    + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
-                    "\n";
-            jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_installnow"));
-            jjdxm_update_content.setText(updateContent);
-        }
+
         if (jjdxm_update_id_check != null) {
             jjdxm_update_id_check.setOnCheckedChangeListener(this);
         }
@@ -173,6 +185,13 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         } else if (id == ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_cancel")) {
             if (UpdateHelper.getInstance().getForceListener() != null) {
                 UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
+            }
+            if (UpdateHelper.getInstance().getUpdateListener() != null) {
+                if (!finshDown) {
+                    UpdateHelper.getInstance().getUpdateListener().onUserCancelDowning();
+                } else {
+                    UpdateHelper.getInstance().getUpdateListener().onUserCancelInstall();
+                }
             }
             finish();
         }

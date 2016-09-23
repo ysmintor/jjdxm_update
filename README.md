@@ -60,6 +60,7 @@ or Gradle:
 
 历史版本：
 
+	compile 'com.dou361.update:jjdxm-update:1.0.5'
 	compile 'com.dou361.update:jjdxm-update:1.0.4'
 	compile 'com.dou361.update:jjdxm-update:1.0.3'
 	compile 'com.dou361.update:jjdxm-update:1.0.2'
@@ -83,7 +84,8 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 ### step1 ###
 #### 在项目主程序build.gradle文件中加入以下代码，即可引入当前更新版本库： ####
 
-	compile 'com.dou361.update:jjdxm-update:1.0.4'
+	compile 'com.dou361.update:jjdxm-update:1.0.5'
+	compile 'com.dou361.download:jjdxm-download:1.0.3'
 
 ### step2 ###
 #### 配置更新接口参数信息，初始化配置接口和解析参数 ####
@@ -526,6 +528,8 @@ checkUpdate和checkOnline的接口调用的有先后顺序之分，遇到相同�
                 
 
 ## ChangeLog ##
+
+2016.09.23 修复安装包被删除后还继续提示安装，用户取消更新监听（注系统安装界面后的取消不进行监听）
 
 2016.09.04 修复只能通过post方式请求接口。添加在线参数和强制更新功能，添加自定义弹出布局的样式
 

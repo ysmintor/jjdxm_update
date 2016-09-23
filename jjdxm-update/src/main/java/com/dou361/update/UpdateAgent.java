@@ -113,6 +113,20 @@ public class UpdateAgent {
                     mUpdate.onUserCancel();
                 }
             }
+
+            @Override
+            public void onUserCancelDowning() {
+                if (mUpdate != null) {
+                    mUpdate.onUserCancelDowning();
+                }
+            }
+
+            @Override
+            public void onUserCancelInstall() {
+                if (mUpdate != null) {
+                    mUpdate.onUserCancelDowning();
+                }
+            }
         });
         executor.check(checkWorker);
     }

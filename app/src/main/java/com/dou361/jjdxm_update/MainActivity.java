@@ -8,9 +8,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.dou361.update.UpdateHelper;
-import com.dou361.update.type.UpdateType;
 import com.dou361.update.listener.ForceListener;
 import com.dou361.update.listener.UpdateListener;
+import com.dou361.update.type.UpdateType;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -54,6 +54,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onCheckError(int code, String errorMsg) {
                             Toast.makeText(mContext, "检测更新失败：" + errorMsg, Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onUserCancel() {
+                            Toast.makeText(mContext, "用户取消", Toast.LENGTH_LONG).show();
+                            super.onUserCancel();
                         }
                     })
                     .check(MainActivity.this);
