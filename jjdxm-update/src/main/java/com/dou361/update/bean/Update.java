@@ -27,6 +27,10 @@ public class Update implements Serializable {
      */
     private String versionName;
     /**
+     * update md5
+     */
+    private String md5;
+    /**
      * update name
      */
     private long apkSize;
@@ -89,5 +93,13 @@ public class Update implements Serializable {
 
     public void setForce(boolean force) {
         this.force = force;
+    }
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
     }
 }

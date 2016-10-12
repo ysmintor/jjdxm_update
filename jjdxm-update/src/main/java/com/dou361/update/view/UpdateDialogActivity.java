@@ -106,11 +106,14 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
             if (dd != null) {
                 finshDown = (dd.getDOWNLOAD_STATE() == ParamsManager.State_FINISH);
                 File fil = new File(mPath);
-                if (finshDown && fil.exists() && (fil.length() + "").equals(dd.getDOWNLOAD_TOTALSIZE())) {
+                if (finshDown && fil.exists() && (fil.length() > 0) && (fil.length() + "").equals(dd.getDOWNLOAD_TOTALSIZE())) {
                     finshDown = true;
                 } else {
+                    DownloadManager.getInstance(mContext).deleteAllDownload();
                     finshDown = false;
                 }
+            } else {
+                finshDown = false;
             }
         } else {
             finshDown = true;
@@ -176,10 +179,39 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         int id = v.getId();
         if (id == ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_ok")) {
             if (finshDown) {
-                InstallUtil.installApk(mContext, mPath);
-                finish();
-                if (UpdateHelper.getInstance().getForceListener() != null) {
-                    UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
+                DownloadModel dd = DownloadManager.getInstance(mContext).getDownloadByUrl(mUpdate.getUpdateUrl());
+                if (dd != null) {
+                    finshDown = (dd.getDOWNLOAD_STATE() == ParamsManager.State_FINISH);
+                    File fil = new File(mPath);
+                    if (finshDown && fil.exists() && (fil.length() > 0) && (fil.length() + "").equals(dd.getDOWNLOAD_TOTALSIZE())) {
+                        finshDown = true;
+                    } else {
+                        DownloadManager.getInstance(mContext).deleteAllDownload();
+                        finshDown = false;
+                    }
+                } else {
+                    finshDown = false;
+                }
+                if (finshDown) {
+                    InstallUtil.installApk(mContext, mPath);
+                    finish();
+                    if (UpdateHelper.getInstance().getForceListener() != null) {
+                        UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
+                    }
+                } else {
+                    Intent intent = new Intent(mContext, DownloadingService.class);
+                    intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.START_DOWN);
+                    intent.putExtra(UpdateConstants.DATA_UPDATE, mUpdate);
+                    startService(intent);
+                    if (UpdateSP.isForced()) {
+                        Intent intenta = new Intent(mContext, DownloadDialogActivity.class);
+                        startActivity(intenta);
+                    } else {
+                        if (UpdateHelper.getInstance().getForceListener() != null) {
+                            UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
+                        }
+                    }
+                    finish();
                 }
             } else {
                 Intent intent = new Intent(mContext, DownloadingService.class);

@@ -192,7 +192,7 @@ public class DownloadingService extends Service {
             contentView = new RemoteViews(getPackageName(), ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_download_notification"));
         }
         contentView.setImageViewResource(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_iv_icon"), getApplicationInfo().icon);
-        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_title"), getApplicationInfo().name);
+        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_title"), getString(getApplicationInfo().labelRes));
         contentView.setProgressBar(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"), 100, 0, false);
         contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"), "0%");
 
@@ -259,7 +259,7 @@ public class DownloadingService extends Service {
             ntfBuilder = new NotificationCompat.Builder(this);
         }
         ntfBuilder.setSmallIcon(getApplicationInfo().icon)
-                .setContentTitle(getApplicationInfo().name)
+                .setContentTitle(getString(getApplicationInfo().labelRes))
                 .setContentText("下载完成，点击安装").setTicker("任务下载完成");
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(
