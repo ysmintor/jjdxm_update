@@ -90,6 +90,7 @@ public class UpdateAgent {
                 Intent intent = new Intent(activity, UpdateDialogActivity.class);
                 intent.putExtra(UpdateConstants.DATA_UPDATE, update);
                 intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.UPDATE_TIE);
+                intent.putExtra(UpdateConstants.START_TYPE, true);
                 activity.startActivity(intent);
             }
 

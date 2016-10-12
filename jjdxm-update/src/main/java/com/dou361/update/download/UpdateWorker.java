@@ -8,6 +8,7 @@ import com.dou361.update.type.RequestType;
 import com.dou361.update.type.UpdateType;
 import com.dou361.update.util.HandlerUtil;
 import com.dou361.update.util.InstallUtil;
+import com.dou361.update.util.NetworkUtil;
 import com.dou361.update.util.UpdateSP;
 
 import java.io.BufferedReader;
@@ -71,10 +72,19 @@ public class UpdateWorker implements Runnable {
                 throw new IllegalArgumentException("parse response to update failed by " + parser.getClass().getCanonicalName());
             }
             int curVersion = InstallUtil.getApkVersion(UpdateHelper.getInstance().getContext());
-            if (parse.getVersionCode() > curVersion && (!UpdateSP.isIgnore(parse.getVersionCode() + "") || UpdateHelper.getInstance().getUpdateType() == UpdateType.checkupdate)) {
+            if ((parse.getVersionCode() > curVersion) &&
+                    ((UpdateSP.isIgnore(parse.getVersionCode() + "")
+                            && (UpdateHelper.getInstance().getUpdateType() == UpdateType.checkupdate))
+                            || (!UpdateSP.isIgnore(parse.getVersionCode() + "")
+                            && (UpdateHelper.getInstance().getUpdateType() != UpdateType.autowifiupdate))
+                            || (!UpdateSP.isIgnore(parse.getVersionCode() + "")
+                            && (UpdateHelper.getInstance().getUpdateType() == UpdateType.autowifiupdate)
+                            && NetworkUtil.isConnectedByWifi()))) {
+                /**有新版本*/
                 UpdateSP.setForced(parse.isForce());
                 sendHasUpdate(parse);
             } else {
+                /**无新版本*/
                 sendNoUpdate();
             }
         } catch (HttpException he) {

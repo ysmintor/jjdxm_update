@@ -41,6 +41,26 @@ public class UpdateHelper {
         return this;
     }
 
+    //设置更新状态栏的布局
+    public UpdateHelper setStatusBarLayout(int view) {
+        UpdateSP.setStatusBarLayout(view);
+        return this;
+    }
+
+    //设置强制更新更新下载的布局
+    public UpdateHelper setDialogDownloadLayout(int view) {
+        UpdateSP.setDialogDownloadLayout(view);
+        return this;
+    }
+
+    //清除自定义布局设置
+    public UpdateHelper setClearCustomLayoutSetting() {
+        UpdateSP.setDialogLayout(-1);
+        UpdateSP.setStatusBarLayout(-1);
+        UpdateSP.setDialogDownloadLayout(-1);
+        return this;
+    }
+
     //联网请求方式
     private RequestType mRequestType = RequestType.get;
 

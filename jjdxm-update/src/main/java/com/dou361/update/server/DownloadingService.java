@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.LayoutRes;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
@@ -24,6 +25,7 @@ import com.dou361.update.bean.Update;
 import com.dou361.update.type.UpdateType;
 import com.dou361.update.util.ResourceUtils;
 import com.dou361.update.util.UpdateConstants;
+import com.dou361.update.util.UpdateSP;
 import com.dou361.update.view.UpdateDialogActivity;
 
 import java.io.File;
@@ -104,6 +106,7 @@ public class DownloadingService extends Service {
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.UPDATE_INSTALL);
                                 intent.putExtra(UpdateConstants.SAVE_PATH, fil.getAbsolutePath());
+                                intent.putExtra(UpdateConstants.START_TYPE, false);
                                 startActivity(intent);
                             }
                             sendBroadcastType(100);
@@ -116,6 +119,7 @@ public class DownloadingService extends Service {
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra(UpdateConstants.DATA_UPDATE, update);
                             intent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.UPDATE_TIE);
+                            intent.putExtra(UpdateConstants.START_TYPE, false);
                             startActivity(intent);
                         }
                         break;
@@ -179,8 +183,15 @@ public class DownloadingService extends Service {
                 "安装包正在下载...",
                 System.currentTimeMillis());
         notification.flags = Notification.FLAG_ONGOING_EVENT;
+
         /*** 自定义  Notification 的显示****/
-        contentView = new RemoteViews(getPackageName(), ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_download_notification"));
+        @LayoutRes int layoutId = UpdateSP.getStatusBarLayout();
+        if (layoutId > 0) {
+            contentView = new RemoteViews(getPackageName(), layoutId);
+        } else {
+            contentView = new RemoteViews(getPackageName(), ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_download_notification"));
+        }
+        contentView.setImageViewResource(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_iv_icon"), getApplicationInfo().icon);
         contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_title"), getApplicationInfo().name);
         contentView.setProgressBar(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"), 100, 0, false);
         contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"), "0%");

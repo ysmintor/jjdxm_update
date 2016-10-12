@@ -12,14 +12,15 @@
     tools:context="com.dou361.jjdxm_update.MainActivity">
 
     <Button
-        android:id="@+id/update"
+        android:id="@+id/btn_auto_update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="update"/>
+        android:text="自动检测更新"/>
 
     <Button
-        android:id="@+id/ddd"
+        android:id="@+id/btn_update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ddd"/>
+        android:text="手动检测更新"/>
+
 </LinearLayout>

@@ -45,6 +45,16 @@ public class UpdateSP {
         return sp.getInt("_update_version_layout_id", 0);
     }
 
+    public static int getStatusBarLayout() {
+        SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
+        return sp.getInt("_update_version_status_layout_id", 0);
+    }
+
+    public static int getDialogDownloadLayout() {
+        SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
+        return sp.getInt("_update_version_download_layout_id", 0);
+    }
+
     public static void setIgnore(String version) {
         SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
@@ -63,6 +73,20 @@ public class UpdateSP {
         SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt("_update_version_layout_id", def);
+        editor.commit();
+    }
+
+    public static void setStatusBarLayout(int def) {
+        SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("_update_version_status_layout_id", def);
+        editor.commit();
+    }
+
+    public static void setDialogDownloadLayout(int def) {
+        SharedPreferences sp = UpdateHelper.getInstance().getContext().getSharedPreferences(KEY_DOWN_SIZE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("_update_version_download_layout_id", def);
         editor.commit();
     }
 }

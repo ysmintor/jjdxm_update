@@ -52,5 +52,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile rootProject.ext.jjdxm_v7
     compile project(':jjdxm-update')
-    compile 'com.dou361.base64:jjdxm-base64:1.0.0'
+    //json数据解析工具
+    compile 'com.alibaba:fastjson:1.2.14'
 }

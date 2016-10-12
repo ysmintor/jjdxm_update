@@ -24,6 +24,7 @@ public class UpdateConstants {
     public static final String DATA_UPDATE = "update";
     public static final String DATA_ACTION = "action";
     public static final String SAVE_PATH = "save_path";
+    public static final String START_TYPE = "start_type";
     public static final int UPDATE_TIE = 0;
     public static final int UPDATE_INSTALL = 1;
     public static final int NOTIFICATION_ACTION = 10;

@@ -64,6 +64,8 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
     private String text;
     //是否已经下载完成
     private boolean finshDown;
+    //调起方式
+    private boolean isActivityEnter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,7 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         mUpdate = (Update) intent.getSerializableExtra(UpdateConstants.DATA_UPDATE);
         mAction = intent.getIntExtra(UpdateConstants.DATA_ACTION, 0);
         mPath = intent.getStringExtra(UpdateConstants.SAVE_PATH);
+        isActivityEnter = intent.getBooleanExtra(UpdateConstants.START_TYPE, false);
         String updateContent = null;
         jjdxm_update_wifi_indicator = findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_wifi_indicator"));
         jjdxm_update_content = (TextView) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_content"));
@@ -114,18 +117,29 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         }
         if (finshDown) {
             //完成下载
-            if (mUpdate.getApkSize() > 0) {
-                text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_dialog_installapk")) + "";
+            if (isActivityEnter) {
+                /**Activity方式调起的*/
+                if (mUpdate.getApkSize() > 0) {
+                    text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_dialog_installapk")) + "";
+                } else {
+                    text = "";
+                }
+                updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
+                        + mUpdate.getVersionName() + "\n"
+                        + text + "\n\n"
+                        + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
+                        "\n";
+                jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_installnow"));
+                jjdxm_update_content.setText(updateContent);
             } else {
-                text = "";
+                /**服务方式方式调起的*/
+                InstallUtil.installApk(mContext, mPath);
+                finish();
+                if (UpdateHelper.getInstance().getForceListener() != null) {
+                    UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
+                }
             }
-            updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
-                    + mUpdate.getVersionName() + "\n"
-                    + text + "\n\n"
-                    + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
-                    "\n";
-            jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_installnow"));
-            jjdxm_update_content.setText(updateContent);
+
         } else {
             //有更新下载
             if (mUpdate.getApkSize() > 0) {

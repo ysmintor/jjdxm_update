@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -47,7 +48,12 @@ public class DownloadDialogActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mContext = this;
-        setContentView(ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_download_dialog"));
+        @LayoutRes int layoutId = UpdateSP.getDialogDownloadLayout();
+        if (layoutId > 0) {
+            setContentView(layoutId);
+        } else {
+            setContentView(ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_download_dialog"));
+        }
         pgBar = (ProgressBar) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"));
         tvPg = (TextView) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"));
         broadcast();
