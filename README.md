@@ -17,6 +17,8 @@
 
 ## Introduction ##
 
+更多使用说明：[wiki][wikiurl]
+
 应用内更新，实现类似友盟自动更新sdk的更新模式，用户使用前只需要配置自己的服务器更新检查接口即可（必须接口），也可以拓展加入一个接口作为在线参数配置来实现（可选接口）可实现以下四种种方式更新和是否强制更新组合使用，支持get、post方式请求网络，默认是使用get方式
 
 ## 更新检查 ##
@@ -41,6 +43,7 @@
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon03.png" width="300">
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon04.png" width="300">
 <img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon05.png" width="300">
+<img src="https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/screenshots/icon06.png" width="300">
 
 ## Download ##
 
@@ -60,6 +63,7 @@ or Gradle:
 
 历史版本：
 
+	compile 'com.dou361.update:jjdxm-update:1.0.6'
 	compile 'com.dou361.update:jjdxm-update:1.0.5'
 	compile 'com.dou361.update:jjdxm-update:1.0.4'
 	compile 'com.dou361.update:jjdxm-update:1.0.3'
@@ -86,7 +90,7 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 ### step1 ###
 #### 在项目主程序build.gradle文件中加入以下代码，即可引入当前更新版本库： ####
 
-	compile 'com.dou361.update:jjdxm-update:1.0.5'
+	compile 'com.dou361.update:jjdxm-update:1.0.6'
 	compile 'com.dou361.download:jjdxm-download:1.0.3'
 
 ### step2 ###
@@ -101,47 +105,53 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 
         private static String checkUrl = "你的更新接口";
 	    private static String onlineUrl = "你的在线参数接口";
-		//临时使用的下载地址
-	    private static String apkFile = "http://wap.apk.anzhi.com/data3/apk/201512/20/55089e385f6e9f350e6455f995ca3452_26503500.apk";
+		/**
+	     * 模拟返回json数据
+	     */
+	    private static String json_result = "{\"code\":0,\"data\":{\"download_url\":\"http://wap.apk.anzhi.com/data3/apk/201512/20/55089e385f6e9f350e6455f995ca3452_26503500.apk\",\"force\":false,\"update_content\":\"测试更新接口\",\"v_code\":\"10\",\"v_name\":\"v1.0.0.16070810\",\"v_sha1\":\"7db76e18ac92bb29ff0ef012abfe178a78477534\",\"v_size\":12365909}}";
+
 
 		public static void init(Context context) {
 	        UpdateHelper.init(context);
 	        UpdateHelper.getInstance()
-					// 可填：请求方式,默认为get请求
-                	.setMethod(RequestType.get)
-	                // 必填：数据更新接口，方法有重载带参数的setCheckUrl(checkUrl, params)
+	                /**可填：请求方式*/
+	                .setMethod(RequestType.get)
+	                /**必填：数据更新接口，该方法一定要在setDialogLayout的前面,因为这方法里面做了重置DialogLayout的操作*/
 	                .setCheckUrl(checkUrl)
-	                // 可填：在线参数接口，方法有重载带参数的setOnlineUrl(onlineUrl, params)
-	                .setOnlineUrl(onlineUrl)
-	                // 必填：用于从数据更新接口获取的数据response中。解析出Update实例。以便框架内部处理
+	                /**可填：清除旧的自定义布局设置。之前有设置过自定义布局，建议这里调用下*/
+	                .setClearCustomLayoutSetting()
+	                /**可填：自定义更新弹出的dialog的布局样式，主要案例中的布局样式里面的id为（jjdxm_update_content、jjdxm_update_id_ok、jjdxm_update_id_cancel）的view类型和id不能修改，其他的都可以修改或删除*/
+	//                .setDialogLayout(R.layout.custom_update_dialog)
+	                /**可填：自定义更新状态栏的布局样式，主要案例中的布局样式里面的id为（jjdxm_update_rich_notification_continue、jjdxm_update_rich_notification_cancel、jjdxm_update_title、jjdxm_update_progress_text、jjdxm_update_progress_bar）的view类型和id不能修改，其他的都可以修改或删除*/
+	//                .setStatusBarLayout(R.layout.custom_download_notification)
+	                /**可填：自定义强制更新弹出的下载进度的布局样式，主要案例中的布局样式里面的id为(jjdxm_update_iv_icon、jjdxm_update_progress_bar、jjdxm_update_progress_text)的view类型和id不能修改，其他的都可以修改或删除*/
+	//                .setDialogDownloadLayout(R.layout.custom_download_dialog)
+	                /**必填：用于从数据更新接口获取的数据response中。解析出Update实例。以便框架内部处理*/
 	                .setCheckJsonParser(new ParseData() {
 	                    @Override
 	                    public Update parse(String response) {
-	                        // 此处模拟一个Update对象
+	                        /**真实情况下使用的解析  response接口请求返回的数据*/
+	//                        CheckResultRepository checkResultRepository = JSON.parseObject(response,CheckResultRepository.class);
+	                        /**临时使用 此处模拟一个返回的json数据json_result*/
+	                        CheckResultRepository checkResultRepository = JSON.parseObject(json_result, CheckResultRepository.class);
+	                        UpdateBean updateBean = checkResultRepository.getData();
 	                        Update update = new Update();
-	                        // 此apk包的下载地址
-	                        update.setUpdateUrl(apkFile);
-	                        // 此apk包的版本号
-	                        update.setVersionCode(2);
-	                        update.setApkSize(12400000);
-	                        // 此apk包的版本名称
-	                        update.setVersionName("2.0");
-	                        // 此apk包的更新内容
-	                        update.setUpdateContent("测试更新");
-	                        // 此apk包是否为强制更新
-	                        update.setForce(false);
+	                        /**必填：此apk包的下载地址*/
+	                        update.setUpdateUrl(updateBean.getDownload_url());
+	                        /**必填：此apk包的版本号*/
+	                        update.setVersionCode(updateBean.getV_code());
+	                        /**可填：此apk包的版本号*/
+	                        update.setApkSize(updateBean.getV_size());
+	                        /**必填：此apk包的版本名称*/
+	                        update.setVersionName(updateBean.getV_name());
+	                        /**可填：此apk包的更新内容*/
+	                        update.setUpdateContent(updateBean.getUpdate_content());
+	                        /**可填：此apk包是否为强制更新*/
+	                        update.setForce(updateBean.isForce());
 	                        return update;
 	                    }
-	                })
-	                // 可填：在线参数接口
-	                .setOnlineJsonParser(new ParseData() {
-	                    @Override
-	                    public String parse(String httpResponse) {
-	                        return null;
-	                    }
 	                });
-	    }
-	}
+    }
 
 （2）setCheckJsonParser方法回调的json字符串解析方法：
 
@@ -317,6 +327,7 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 
 	//默认是自动检测更新
 	UpdateHelper.getInstance()
+                .setUpdateType(UpdateType.autoupdate)
                 .check(MainActivity.this);
 
 (2)在需要手动点击的方法中调用
@@ -384,152 +395,9 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 
     }
 
-
-## More Actions ##
-
-### 自动更新接口和在线参数接口调用的顺序 ###
-checkUpdate和checkOnline的接口调用的有先后顺序之分，遇到相同的配置时后调用的会覆盖先调用的，例如设置强制更新的配置
-
-	UpdateHelper.getInstance().setForced(true);
-
-### 强制更新，需要设置回调监听setForceListener ###
-
-	UpdateHelper.getInstance().setForceListener(new ForceListener() {
-                    @Override
-                    public void onUserCancel(boolean force) {
-                        if (force) {
-                            //用户点击取消操作后的处理，一般是退出应用
-                            finish();
-                        }
-                    }
-                });
-
-### 在线参数接口的使用场景 ###
-在线参数接口，可以用来做一个在线动态配置应用的是否强制更新属性，当然也可以直接在自动更新接口中做强制更新的操作。因此，在线参数接口更多的功能是为了提供给用户配置一些在线的参数配置。
-
-### 自定义弹出框样式 ###
-通过setDialogLayout(R.layout.custom_update_dialog)方法实现自定义布局，可以复制以下案例布局，重新命名一个名称例如：custom_update_dialog
-
-	<?xml version="1.0" encoding="utf-8"?>
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	                android:layout_width="match_parent"
-	                android:layout_height="match_parent"
-	                android:background="#99232323">
-	
-	    <LinearLayout
-	        android:layout_width="280dp"
-	        android:layout_height="wrap_content"
-	        android:layout_centerInParent="true"
-	        android:background="@drawable/jjdxm_update_dialog_bg"
-	        android:orientation="vertical"
-	        android:paddingBottom="8dp">
-	
-	        <!-- Title -->
-	
-	        <RelativeLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="40dp">
-	
-	            <ImageView
-	                android:id="@+id/jjdxm_update_wifi_indicator"
-	                android:layout_width="30dp"
-	                android:layout_height="30dp"
-	                android:layout_centerVertical="true"
-	                android:layout_marginLeft="10dp"
-	                android:contentDescription="@string/jjdxm_update_gprscondition"
-	                android:src="@drawable/jjdxm_update_wifi_disable"/>
-	
-	            <TextView
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:layout_centerInParent="true"
-	                android:text="@string/jjdxm_update_updatetitle"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="#008bea"/>
-	
-	        </RelativeLayout>
-	
-	        <!-- split -->
-	
-	        <View
-	            android:layout_width="fill_parent"
-	            android:layout_height="2dp"
-	            android:background="#008bea"/>
-	        <!-- Content -->
-	
-	        <ScrollView
-	            android:layout_width="fill_parent"
-	            android:layout_height="0dp"
-	            android:layout_weight="1"
-	            android:padding="10dp">
-	
-	            <LinearLayout
-	                android:layout_width="fill_parent"
-	                android:layout_height="wrap_content"
-	                android:orientation="vertical">
-	
-	                <TextView
-	                    android:id="@+id/jjdxm_update_content"
-	                    android:layout_width="fill_parent"
-	                    android:layout_height="wrap_content"
-	                    android:layout_marginLeft="5dp"
-	                    android:layout_marginRight="5dp"
-	                    android:layout_marginTop="10dp"
-	                    android:focusable="true"
-	                    android:textColor="#000"/>
-	            </LinearLayout>
-	        </ScrollView>
-	
-	        <!-- Ignore CheckBox -->
-	
-	        <CheckBox
-	            android:id="@+id/jjdxm_update_id_check"
-	            android:layout_width="fill_parent"
-	            android:layout_height="32dp"
-	            android:button="@drawable/jjdxm_update_button_check_selector"
-	            android:text="@string/jjdxm_update_ignore"
-	            android:textColor="#000"/>
-	
-	        <!-- OK&Cancel Button -->
-	
-	        <LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content">
-	
-	            <Button
-	                android:id="@+id/jjdxm_update_id_ok"
-	                android:layout_width="0dp"
-	                android:layout_height="wrap_content"
-	                android:layout_margin="5dp"
-	                android:layout_weight="1"
-	                android:background="@drawable/jjdxm_update_button_ok_bg_selector"
-	                android:focusable="true"
-	                android:gravity="center"
-	                android:padding="12dp"
-	                android:text="@string/jjdxm_update_updatenow"
-	                android:textColor="#FFFFFF"/>
-	
-	            <Button
-	                android:id="@+id/jjdxm_update_id_cancel"
-	                android:layout_width="0dp"
-	                android:layout_height="wrap_content"
-	                android:layout_margin="5dp"
-	                android:layout_weight="1"
-	                android:background="@drawable/jjdxm_update_button_cancel_bg_selector"
-	                android:focusable="true"
-	                android:gravity="center"
-	                android:padding="12dp"
-	                android:text="@string/jjdxm_update_notnow"
-	                android:textColor="#000"/>
-	        </LinearLayout>
-	    </LinearLayout>
-	
-	</RelativeLayout>
-
-以上案例中的布局样式里面的除了id为（jjdxm_update_content、jjdxm_update_id_ok、jjdxm_update_id_cancel）的view类型和id不能修改，其他的都可以修改或删除。
-                
-
 ## ChangeLog ##
+
+2016.10.13 添加自定义状态栏、自定义强制更新弹出框、网络分离使用自己的网络框架进行联网；修复状态栏不显示应用名称，autowifiupdate中，在流量情况下也会提示更新界面，进入安装界面再删除安装包后，点击安装提示的解析错误等
 
 2016.09.23 修复安装包被删除后还继续提示安装，用户取消更新监听（注系统安装界面后的取消不进行监听）
 
@@ -578,6 +446,7 @@ If you find any bug when using project, please report [here][issues]. Thanks for
 [github]:https://github.com/jjdxmashl/
 [project]:https://github.com/jjdxmashl/jjdxm_update/
 [issues]:https://github.com/jjdxmashl/jjdxm_update/issues/new
+[wikiurl]:https://github.com/jjdxmashl/jjdxm_update/wiki
 [downapk]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/apk/app-debug.apk
 [lastaar]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/release/jjdxm-update-1.0.3.aar
 [lastjar]:https://raw.githubusercontent.com/jjdxmashl/jjdxm_update/master/release/jjdxm-update-1.0.3.jar
