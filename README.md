@@ -17,7 +17,6 @@
 
 ## Introduction ##
 
-更多使用说明：[wiki][wikiurl]
 
 应用内更新，实现类似友盟自动更新sdk的更新模式，用户使用前只需要配置自己的服务器更新检查接口即可（必须接口），也可以拓展加入一个接口作为在线参数配置来实现（可选接口）可实现以下四种种方式更新和是否强制更新组合使用，支持get、post方式请求网络，默认是使用get方式
 
@@ -87,313 +86,28 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 [AndroidStudio代码混淆注意的问题][minify]
 
 ## Get Started ##
-### step1 ###
-#### 在项目主程序build.gradle文件中加入以下代码，即可引入当前更新版本库： ####
 
-	compile 'com.dou361.update:jjdxm-update:1.0.6'
-	compile 'com.dou361.download:jjdxm-download:1.0.3'
+请参考 wiki 文档：[开发指南][wikiurl]
 
-### step2 ###
-#### 配置更新接口参数信息，初始化配置接口和解析参数 ####
+- 1 [概述](https://github.com/jjdxmashl/jjdxm_update/wiki#1)
+	- 1.1 [功能以及版本](https://github.com/jjdxmashl/jjdxm_update/wiki#1.1)
+	- 1.2 [特性](https://github.com/jjdxmashl/jjdxm_update/wiki#1.2)
+- 2 [阅读对象](https://github.com/jjdxmashl/jjdxm_update/wiki#2)
+- 3 [开发准备](https://github.com/jjdxmashl/jjdxm_update/wiki#3)
+	- 3.1 [设备以及系统](https://github.com/jjdxmashl/jjdxm_update/wiki#3.1)
+	- 3.2 [混淆](https://github.com/jjdxmashl/jjdxm_update/wiki#3.3)
+	- 3.3 [版本升级须知](https://github.com/jjdxmashl/jjdxm_update/wiki#3.3)
+- 4 [快速开始](https://github.com/jjdxmashl/jjdxm_update/wiki/4-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B#4)
+	- 4.1 [配置开发环境](https://github.com/jjdxmashl/jjdxm_update/wiki/4-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B#4.1)
+	- 4.2 [SDK 集成](https://github.com/jjdxmashl/jjdxm_update/wiki/4-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B#4.2)
+- 5 [功能使用](https://github.com/jjdxmashl/jjdxm_update/wiki/5-%E5%8A%9F%E8%83%BD%E4%BD%BF%E7%94%A8#5)
+	- 5.1 [播放参数配置](https://github.com/jjdxmashl/jjdxm_update/wiki/5-%E5%8A%9F%E8%83%BD%E4%BD%BF%E7%94%A8#5.1)
+	- 5.2 [播放状态回调](https://github.com/jjdxmashl/jjdxm_update/wiki/5-%E5%8A%9F%E8%83%BD%E4%BD%BF%E7%94%A8#5.2)
+	- 5.3 [连接状态处理](https://github.com/jjdxmashl/jjdxm_update/wiki/5-%E5%8A%9F%E8%83%BD%E4%BD%BF%E7%94%A8#5.3)
+	- 5.4 [播放器声音调节](https://github.com/jjdxmashl/jjdxm_update/wiki/5-%E5%8A%9F%E8%83%BD%E4%BD%BF%E7%94%A8#5.4)
+- 6 [知识补充与建议](https://github.com/jjdxmashl/jjdxm_update/wiki/6-%E7%9F%A5%E8%AF%86%E7%9A%84%E8%A1%A5%E5%85%85%E4%B8%8E%E5%BB%BA%E8%AE%AE#6)
+- 7 [历史记录](https://github.com/jjdxmashl/jjdxm_update/wiki/8-%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95#8)
 
-
-这里必须配置一个在线更新接口及其的数据返回结构的解析，可选的是在线参数接口及其数据返回结构的解析，在线参数可以随机定义零个或多个不同意义的参数来达到在线修改apk的部分特性。
-
-（1）创建一个自动更新的配置文件
-
-    public class UpdateConfig {
-
-        private static String checkUrl = "你的更新接口";
-	    private static String onlineUrl = "你的在线参数接口";
-		/**
-	     * 模拟返回json数据
-	     */
-	    private static String json_result = "{\"code\":0,\"data\":{\"download_url\":\"http://wap.apk.anzhi.com/data3/apk/201512/20/55089e385f6e9f350e6455f995ca3452_26503500.apk\",\"force\":false,\"update_content\":\"测试更新接口\",\"v_code\":\"10\",\"v_name\":\"v1.0.0.16070810\",\"v_sha1\":\"7db76e18ac92bb29ff0ef012abfe178a78477534\",\"v_size\":12365909}}";
-
-
-		public static void init(Context context) {
-	        UpdateHelper.init(context);
-	        UpdateHelper.getInstance()
-	                /**可填：请求方式*/
-	                .setMethod(RequestType.get)
-	                /**必填：数据更新接口，该方法一定要在setDialogLayout的前面,因为这方法里面做了重置DialogLayout的操作*/
-	                .setCheckUrl(checkUrl)
-	                /**可填：清除旧的自定义布局设置。之前有设置过自定义布局，建议这里调用下*/
-	                .setClearCustomLayoutSetting()
-	                /**可填：自定义更新弹出的dialog的布局样式，主要案例中的布局样式里面的id为（jjdxm_update_content、jjdxm_update_id_ok、jjdxm_update_id_cancel）的view类型和id不能修改，其他的都可以修改或删除*/
-	//                .setDialogLayout(R.layout.custom_update_dialog)
-	                /**可填：自定义更新状态栏的布局样式，主要案例中的布局样式里面的id为（jjdxm_update_rich_notification_continue、jjdxm_update_rich_notification_cancel、jjdxm_update_title、jjdxm_update_progress_text、jjdxm_update_progress_bar）的view类型和id不能修改，其他的都可以修改或删除*/
-	//                .setStatusBarLayout(R.layout.custom_download_notification)
-	                /**可填：自定义强制更新弹出的下载进度的布局样式，主要案例中的布局样式里面的id为(jjdxm_update_iv_icon、jjdxm_update_progress_bar、jjdxm_update_progress_text)的view类型和id不能修改，其他的都可以修改或删除*/
-	//                .setDialogDownloadLayout(R.layout.custom_download_dialog)
-	                /**必填：用于从数据更新接口获取的数据response中。解析出Update实例。以便框架内部处理*/
-	                .setCheckJsonParser(new ParseData() {
-	                    @Override
-	                    public Update parse(String response) {
-	                        /**真实情况下使用的解析  response接口请求返回的数据*/
-	//                        CheckResultRepository checkResultRepository = JSON.parseObject(response,CheckResultRepository.class);
-	                        /**临时使用 此处模拟一个返回的json数据json_result*/
-	                        CheckResultRepository checkResultRepository = JSON.parseObject(json_result, CheckResultRepository.class);
-	                        UpdateBean updateBean = checkResultRepository.getData();
-	                        Update update = new Update();
-	                        /**必填：此apk包的下载地址*/
-	                        update.setUpdateUrl(updateBean.getDownload_url());
-	                        /**必填：此apk包的版本号*/
-	                        update.setVersionCode(updateBean.getV_code());
-	                        /**可填：此apk包的版本号*/
-	                        update.setApkSize(updateBean.getV_size());
-	                        /**必填：此apk包的版本名称*/
-	                        update.setVersionName(updateBean.getV_name());
-	                        /**可填：此apk包的更新内容*/
-	                        update.setUpdateContent(updateBean.getUpdate_content());
-	                        /**可填：此apk包是否为强制更新*/
-	                        update.setForce(updateBean.isForce());
-	                        return update;
-	                    }
-	                });
-    }
-
-（2）setCheckJsonParser方法回调的json字符串解析方法：
-
-例如返回的json字符串为：
-
-	{
-	    "code": 0,
-	    "data": {
-	        "download_url": "http://115.159.45.251/software/feibei_live1.0.0.16070810_zs.apk ",
-	        "force": false,
-	        "update_content": "测试更新接口",
-	        "v_code": "10",
-	        "v_name": "v1.0.0.16070810",
-	        "v_sha1": "7db76e18ac92bb29ff0ef012abfe178a78477534",
-	        "v_size": 12365909
-	    }
-	}
-
-使用第三方json工具解析：
-
-
-    compile 'com.alibaba:fastjson:1.2.14'
-
-	public class UpdateBean {
-	    /**
-	     * code : 0
-	     * data : {"download_url":"http://115.159.45.251/software/feibei_live1.0.0.16070810_zs.apk ","force":false,"update_content":"测试更新接口","v_code":"10","v_name":"v1.0.0.16070810","v_sha1":"7db76e18ac92bb29ff0ef012abfe178a78477534","v_size":12365909}
-	     */
-	
-	    private int code;
-	    /**
-	     * download_url : http://115.159.45.251/software/feibei_live1.0.0.16070810_zs.apk
-	     * force : false
-	     * update_content : 测试更新接口
-	     * v_code : 10
-	     * v_name : v1.0.0.16070810
-	     * v_sha1 : 7db76e18ac92bb29ff0ef012abfe178a78477534
-	     * v_size : 12365909
-	     */
-	
-	    private DataBean data;
-	
-	    public int getCode() {
-	        return code;
-	    }
-	
-	    public void setCode(int code) {
-	        this.code = code;
-	    }
-	
-	    public DataBean getData() {
-	        return data;
-	    }
-	
-	    public void setData(DataBean data) {
-	        this.data = data;
-	    }
-	
-	    public static class DataBean {
-	        private String download_url;
-	        private boolean force;
-	        private String update_content;
-	        private String v_code;
-	        private String v_name;
-	        private String v_sha1;
-	        private int v_size;
-	
-	        public String getDownload_url() {
-	            return download_url;
-	        }
-	
-	        public void setDownload_url(String download_url) {
-	            this.download_url = download_url;
-	        }
-	
-	        public boolean isForce() {
-	            return force;
-	        }
-	
-	        public void setForce(boolean force) {
-	            this.force = force;
-	        }
-	
-	        public String getUpdate_content() {
-	            return update_content;
-	        }
-	
-	        public void setUpdate_content(String update_content) {
-	            this.update_content = update_content;
-	        }
-	
-	        public String getV_code() {
-	            return v_code;
-	        }
-	
-	        public void setV_code(String v_code) {
-	            this.v_code = v_code;
-	        }
-	
-	        public String getV_name() {
-	            return v_name;
-	        }
-	
-	        public void setV_name(String v_name) {
-	            this.v_name = v_name;
-	        }
-	
-	        public String getV_sha1() {
-	            return v_sha1;
-	        }
-	
-	        public void setV_sha1(String v_sha1) {
-	            this.v_sha1 = v_sha1;
-	        }
-	
-	        public int getV_size() {
-	            return v_size;
-	        }
-	
-	        public void setV_size(int v_size) {
-	            this.v_size = v_size;
-	        }
-	    }
-	}
-
-	UpdateBean mUpdateBean = JSON.parseObject(json, UpdateBean.class);
-
-
-使用系统的json对象解析：
-
-	// 此处模拟一个Update对象
-    Update update = new Update();
-    try {
-        JSONObject jobj = new JSONObject(response);
-        if (!jobj.isNull("data")) {
-            JSONObject job = jobj.optJSONObject("data");
-            if (!job.isNull("v_code")) {
-                // 此apk包的版本号
-                update.setVersionCode(Integer.valueOf(job.optString("v_code")));
-            }
-            if (!job.isNull("v_size")) {
-                // 此apk包的大小
-                update.setApkSize(job.optLong("v_size"));
-            }
-            if (!job.isNull("v_name")) {
-                // 此apk包的版本名称
-                update.setVersionName(job.optString("v_name"));
-            }
-            if (!job.isNull("update_content")) {
-                // 此apk包的更新内容
-                update.setUpdateContent(job.optString("update_content"));
-            }
-            if (!job.isNull("download_url")) {
-                // 此apk包的下载地址
-                update.setUpdateUrl(job.optString("download_url"));
-            }
-            if (!job.isNull("force")) {
-                // 此apk包的下载地址
-                update.setForce(job.optBoolean("force", false));
-            }
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-
-### step3 ###
-#### 在Application中oncreate()方法中调用 ####
-
-	UpdateConfig.init(this);
-
-### step4 ###
-(1)在mainActivity中oncreate()方法中调用
-
-	//默认是自动检测更新
-	UpdateHelper.getInstance()
-                .setUpdateType(UpdateType.autoupdate)
-                .check(MainActivity.this);
-
-(2)在需要手动点击的方法中调用
-
-	//手动检测更新
-	UpdateHelper.getInstance()
-                .setUpdateType(UpdateType.checkupdate)
-                .setUpdateListener(new UpdateListener() {
-                    @Override
-                    public void noUpdate() {
-                        Toast.makeText(mContext, "已经是最新版本了", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onCheckError(int code, String errorMsg) {
-                        Toast.makeText(mContext, "检测更新失败：" + errorMsg, Toast.LENGTH_LONG).show();
-                    }
-                })
-                .check(MainActivity.this);
-
-### 1.几种方式的调用 ###
-
-	//有网更新
-	UpdateType.checkupdate,
-	//自动更新
-    UpdateType.autoupdate,
-	//只有WiFi更新
-    UpdateType.autowifiupdate,
-	//只有WiFi下载
-    UpdateType.autowifidown
-
-调用方式这里只举例静默更新，其他方式类似
-
-	/静默更新
-	UpdateHelper.getInstance()
-				.setUpdateType(UpdateType.autowifidown)
-                .check(MainActivity.this);
-
-### 2.更新监听回调UpdateListener，主要有四个方法 ###
-
-	/**
-     * There are a new version of APK on network
-     */
-    public void hasUpdate(Update update) {
-
-    }
-
-    /**
-     * There are no new version for update
-     */
-    public abstract void noUpdate();
-
-    /**
-     * http check error,
-     *
-     * @param code     http code
-     * @param errorMsg http error msg
-     */
-    public abstract void onCheckError(int code, String errorMsg);
-
-    /**
-     * to be invoked by user press cancel button.
-     */
-    public void onUserCancel() {
-
-    }
 
 ## ChangeLog ##
 
