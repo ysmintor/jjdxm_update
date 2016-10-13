@@ -34,6 +34,7 @@ public class UpdateHelper {
     private UpdateListener mUpdateListener;
     private ForceListener mForceListener;
     private OnlineCheckListener mOnlineCheckListener;
+    private String requestResultData;
 
     //设置更新对话框的布局
     public UpdateHelper setDialogLayout(int view) {
@@ -116,6 +117,14 @@ public class UpdateHelper {
         return this;
     }
 
+    /**
+     * 设置请求返回的结果内容
+     */
+    public UpdateHelper setRequestResultData(String data) {
+        this.requestResultData = data;
+        return this;
+    }
+
     public UpdateHelper setUpdateListener(UpdateListener listener) {
         this.mUpdateListener = listener;
         return this;
@@ -173,6 +182,10 @@ public class UpdateHelper {
         return onlineUrl;
     }
 
+    public String getRequestResultData() {
+        return requestResultData;
+    }
+
     public TreeMap<String, Object> getOnlineParams() {
         return onlineParams;
     }
@@ -199,6 +212,10 @@ public class UpdateHelper {
 
     public void check(Activity activity) {
         UpdateAgent.getInstance().checkUpdate(activity);
+    }
+
+    public void checkNoUrl(Activity activity) {
+        UpdateAgent.getInstance().checkNoUrlUpdate(activity);
     }
 
     public UpdateListener getUpdateListener() {

@@ -76,7 +76,9 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 
 根据你的混淆器配置和使用，您可能需要在你的proguard文件内配置以下内容：
 
-	后续加上
+	-keep class com.dou361.** {
+    *;
+    }
 
 [AndroidStudio代码混淆注意的问题][minify]
 

@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Button autoUpdate;
     private Button update;
+    private Button networkUpdate;
     private Context mContext;
     /**
      * 自动更新和手动更新放在一起监听方法会相互影响，这里做下过滤
@@ -30,8 +31,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mContext = this;
         autoUpdate = (Button) findViewById(R.id.btn_auto_update);
         update = (Button) findViewById(R.id.btn_update);
+        networkUpdate = (Button) findViewById(R.id.btn_network_update);
         autoUpdate.setOnClickListener(this);
         update.setOnClickListener(this);
+        networkUpdate.setOnClickListener(this);
         autoUpdate();
     }
 
@@ -41,6 +44,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             autoUpdate();
         } else if (v.getId() == R.id.btn_update) {
             update();
+        } else if (v.getId() == R.id.btn_network_update) {
+            String requestStri = "{\"code\":0,\"data\":{\"download_url\":\"http://wap.apk.anzhi.com/data3/apk/201512/20/55089e385f6e9f350e6455f995ca3452_26503500.apk\",\"force\":false,\"update_content\":\"测试更新接口\",\"v_code\":\"10\",\"v_name\":\"v1.0.0.16070810\",\"v_sha1\":\"7db76e18ac92bb29ff0ef012abfe178a78477534\",\"v_size\":12365909}}";
+            networkUpdate(requestStri);
         }
     }
 
@@ -93,5 +99,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 })
                 .check(MainActivity.this);
+    }
+
+
+    /**
+     * 分离网络的检测更新
+     */
+    private void networkUpdate(String data) {
+        isAutoUpdate = false;
+        UpdateHelper.getInstance()
+                .setRequestResultData(data)
+                .setUpdateListener(new UpdateListener() {
+                    @Override
+                    public void noUpdate() {
+                        if (!isAutoUpdate) {
+                            Toast.makeText(mContext, "已经是最新版本了", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCheckError(int code, String errorMsg) {
+                        if (!isAutoUpdate) {
+                            Toast.makeText(mContext, "检测更新失败：" + errorMsg, Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onUserCancel() {
+                        if (!isAutoUpdate) {
+                            Toast.makeText(mContext, "用户取消", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
+                .checkNoUrl(MainActivity.this);
     }
 }

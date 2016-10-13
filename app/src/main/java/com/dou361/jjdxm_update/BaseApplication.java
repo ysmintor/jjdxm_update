@@ -14,6 +14,8 @@ public class BaseApplication extends Application {
         UpdateConfig.initGet(this);
         /**post的请求方式*/
 //        UpdateConfig.initPost(this);
+        /**分离网络使用的初始化*/
+//        UpdateConfig.initNoUrl(this);
 
     }
 }

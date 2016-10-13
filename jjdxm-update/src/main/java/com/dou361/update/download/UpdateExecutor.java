@@ -30,6 +30,11 @@ public class UpdateExecutor implements IUpdateExecutor {
     }
 
     @Override
+    public void checkNoUrl(UpdateNoUrlWorker worker) {
+        pool.execute(worker);
+    }
+
+    @Override
     public void onlineCheck(OnlineCheckWorker worker) {
         pool.execute(worker);
     }

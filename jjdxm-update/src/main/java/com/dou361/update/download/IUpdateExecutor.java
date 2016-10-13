@@ -10,6 +10,11 @@ public interface IUpdateExecutor {
     void check(UpdateWorker worker);
 
     /**
+     * check if is new version exist;
+     */
+    void checkNoUrl(UpdateNoUrlWorker worker);
+
+    /**
      * request download new version apk
      */
     void onlineCheck(OnlineCheckWorker worker);
