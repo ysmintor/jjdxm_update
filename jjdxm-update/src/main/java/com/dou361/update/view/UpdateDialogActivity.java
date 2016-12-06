@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.dou361.download.DownloadManager;
 import com.dou361.download.DownloadModel;
 import com.dou361.download.ParamsManager;
+import com.dou361.update.R;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
 import com.dou361.update.server.DownloadingService;
@@ -24,7 +25,6 @@ import com.dou361.update.type.UpdateType;
 import com.dou361.update.util.FileUtils;
 import com.dou361.update.util.InstallUtil;
 import com.dou361.update.util.NetworkUtil;
-import com.dou361.update.util.ResourceUtils;
 import com.dou361.update.util.UpdateConstants;
 import com.dou361.update.util.UpdateSP;
 
@@ -76,7 +76,7 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         if (layoutId > 0) {
             setContentView(layoutId);
         } else {
-            setContentView(ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_update_dialog"));
+            setContentView(R.layout.jjdxm_update_dialog);
         }
         Intent intent = getIntent();
         mUpdate = (Update) intent.getSerializableExtra(UpdateConstants.DATA_UPDATE);
@@ -84,11 +84,11 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         mPath = intent.getStringExtra(UpdateConstants.SAVE_PATH);
         isActivityEnter = intent.getBooleanExtra(UpdateConstants.START_TYPE, false);
         String updateContent = null;
-        jjdxm_update_wifi_indicator = findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_wifi_indicator"));
-        jjdxm_update_content = (TextView) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_content"));
-        jjdxm_update_id_check = (CheckBox) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_check"));
-        jjdxm_update_id_ok = (Button) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_ok"));
-        jjdxm_update_id_cancel = (Button) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_cancel"));
+        jjdxm_update_wifi_indicator = findViewById(R.id.jjdxm_update_wifi_indicator);
+        jjdxm_update_content = (TextView) findViewById(R.id.jjdxm_update_content);
+        jjdxm_update_id_check = (CheckBox) findViewById(R.id.jjdxm_update_id_check);
+        jjdxm_update_id_ok = (Button) findViewById(R.id.jjdxm_update_id_ok);
+        jjdxm_update_id_cancel = (Button) findViewById(R.id.jjdxm_update_id_cancel);
         if (jjdxm_update_wifi_indicator != null) {
             if (NetworkUtil.isConnectedByWifi()) {
                 //WiFi环境
@@ -123,16 +123,16 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
             if (isActivityEnter) {
                 /**Activity方式调起的*/
                 if (mUpdate.getApkSize() > 0) {
-                    text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_dialog_installapk")) + "";
+                    text = getText(R.string.jjdxm_update_dialog_installapk) + "";
                 } else {
                     text = "";
                 }
-                updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
+                updateContent = getText(R.string.jjdxm_update_newversion)
                         + mUpdate.getVersionName() + "\n"
                         + text + "\n\n"
-                        + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
+                        + getText(R.string.jjdxm_update_updatecontent) + "\n" + mUpdate.getUpdateContent() +
                         "\n";
-                jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_installnow"));
+                jjdxm_update_id_ok.setText(R.string.jjdxm_update_installnow);
                 jjdxm_update_content.setText(updateContent);
             } else {
                 /**服务方式方式调起的*/
@@ -146,16 +146,16 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
         } else {
             //有更新下载
             if (mUpdate.getApkSize() > 0) {
-                text = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_targetsize")) + FileUtils.HumanReadableFilesize(mUpdate.getApkSize());
+                text = getText(R.string.jjdxm_update_targetsize) + FileUtils.HumanReadableFilesize(mUpdate.getApkSize());
             } else {
                 text = "";
             }
-            updateContent = getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_newversion"))
+            updateContent = getText(R.string.jjdxm_update_newversion)
                     + mUpdate.getVersionName() + "\n"
                     + text + "\n\n"
-                    + getText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatecontent")) + "\n" + mUpdate.getUpdateContent() +
+                    + getText(R.string.jjdxm_update_updatecontent) + "\n" + mUpdate.getUpdateContent() +
                     "\n";
-            jjdxm_update_id_ok.setText(ResourceUtils.getResourceIdByName(mContext, "string", "jjdxm_update_updatenow"));
+            jjdxm_update_id_ok.setText(R.string.jjdxm_update_updatenow);
             jjdxm_update_content.setText(updateContent);
         }
         if (jjdxm_update_id_check != null) {
@@ -177,7 +177,7 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_ok")) {
+        if (id == R.id.jjdxm_update_id_ok) {
             if (finshDown) {
                 DownloadModel dd = DownloadManager.getInstance(mContext).getDownloadByUrl(mUpdate.getUpdateUrl());
                 if (dd != null) {
@@ -228,7 +228,7 @@ public class UpdateDialogActivity extends Activity implements View.OnClickListen
                 }
                 finish();
             }
-        } else if (id == ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_id_cancel")) {
+        } else if (id == R.id.jjdxm_update_id_cancel) {
             if (UpdateHelper.getInstance().getForceListener() != null) {
                 UpdateHelper.getInstance().getForceListener().onUserCancel(UpdateSP.isForced());
             }
