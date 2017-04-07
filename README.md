@@ -62,6 +62,7 @@ or Gradle:
 
 历史版本：
 
+    compile 'com.dou361.update:jjdxm-update:1.0.7'
 	compile 'com.dou361.update:jjdxm-update:1.0.6'
 	compile 'com.dou361.update:jjdxm-update:1.0.5'
 	compile 'com.dou361.update:jjdxm-update:1.0.4'
@@ -77,15 +78,20 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 
 ## Proguard ##
 
-根据你的混淆器配置和使用，您可能需要在你的proguard文件内配置以下内容：
-
-	-keep class com.dou361.** {
-    *;
-    }
+类库中使用consumerProguardFiles属性，它指定了编译时，库自动引入的混淆规则。也就是说应用打包时候会自动的寻找库里的混淆文件，不需要手工配置了。
 
 [AndroidStudio代码混淆注意的问题][minify]
 
 ## Get Started ##
+
+step1
+
+需要申请的一些权限已经集成到类库中了,引入依赖，如果主程序项目中有重复的类库，可以用打开注释来移除重复依赖。
+
+    compile ('com.dou361.update:jjdxm-update:1.0.7'){
+//        exclude group: 'com.android.support', module: 'support-v4'
+//        exclude group: 'com.dou361.download', module: 'jjdxm-download'
+    }
 
 请参考 wiki 文档：[开发指南][wikiurl]
 
@@ -110,6 +116,8 @@ jjdxm-update requires at minimum Java 9 or Android 2.3.
 
 
 ## ChangeLog ##
+
+2016.12.06 1.0.7版本打包，添加混淆规则，移除反射自动和手动检测分开不同activity调用
 
 2016.10.13 添加自定义状态栏、自定义强制更新弹出框、网络分离使用自己的网络框架进行联网；修复状态栏不显示应用名称，autowifiupdate中，在流量情况下也会提示更新界面，进入安装界面再删除安装包后，点击安装提示的解析错误等
 

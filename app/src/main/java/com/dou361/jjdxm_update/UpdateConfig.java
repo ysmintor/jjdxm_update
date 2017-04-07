@@ -74,6 +74,7 @@ public class UpdateConfig {
 //                        CheckResultRepository checkResultRepository = JSON.parseObject(response,CheckResultRepository.class);
                         /**临时使用 此处模拟一个返回的json数据json_result*/
                         CheckResultRepository checkResultRepository = JSON.parseObject(json_result, CheckResultRepository.class);
+                        /**这里是模拟后台接口返回的json数据解析的bean，需要根据真实情况来写*/
                         UpdateBean updateBean = checkResultRepository.getData();
                         Update update = new Update();
                         /**必填：此apk包的下载地址*/
@@ -124,6 +125,7 @@ public class UpdateConfig {
 //                        CheckResultRepository checkResultRepository = JSON.parseObject(response,CheckResultRepository.class);
                         /**临时使用 此处模拟一个返回的json数据json_result*/
                         CheckResultRepository checkResultRepository = JSON.parseObject(json_result, CheckResultRepository.class);
+                        /**这里是模拟后台接口返回的json数据解析的bean，需要根据真实情况来写*/
                         UpdateBean updateBean = checkResultRepository.getData();
                         Update update = new Update();
                         /**必填：此apk包的下载地址*/
@@ -167,9 +169,8 @@ public class UpdateConfig {
                     @Override
                     public Update parse(String response) {
                         /**真实情况下使用的解析  response接口请求返回的数据*/
-//                        CheckResultRepository checkResultRepository = JSON.parseObject(response,CheckResultRepository.class);
-                        /**临时使用 此处模拟一个返回的json数据json_result*/
-                        CheckResultRepository checkResultRepository = JSON.parseObject(json_result, CheckResultRepository.class);
+                        CheckResultRepository checkResultRepository = JSON.parseObject(response,CheckResultRepository.class);
+                        /**这里是模拟后台接口返回的json数据解析的bean，需要根据真实情况来写*/
                         UpdateBean updateBean = checkResultRepository.getData();
                         Update update = new Update();
                         /**必填：此apk包的下载地址*/

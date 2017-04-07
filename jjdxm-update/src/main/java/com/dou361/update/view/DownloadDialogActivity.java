@@ -13,8 +13,8 @@ import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.dou361.update.R;
 import com.dou361.update.UpdateHelper;
-import com.dou361.update.util.ResourceUtils;
 import com.dou361.update.util.UpdateSP;
 
 /**
@@ -52,10 +52,10 @@ public class DownloadDialogActivity extends Activity {
         if (layoutId > 0) {
             setContentView(layoutId);
         } else {
-            setContentView(ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_download_dialog"));
+            setContentView(R.layout.jjdxm_download_dialog);
         }
-        pgBar = (ProgressBar) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"));
-        tvPg = (TextView) findViewById(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"));
+        pgBar = (ProgressBar) findViewById(R.id.jjdxm_update_progress_bar);
+        tvPg = (TextView) findViewById(R.id.jjdxm_update_progress_text);
         broadcast();
     }
 

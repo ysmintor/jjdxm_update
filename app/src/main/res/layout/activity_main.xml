@@ -18,15 +18,16 @@
         android:text="自动检测更新"/>
 
     <Button
+        android:id="@+id/btn_network"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="分离网络的自动更新"/>
+
+    <Button
         android:id="@+id/btn_update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="手动检测更新"/>
 
-    <Button
-        android:id="@+id/btn_network_update"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="分类网络请求 手动检测更新"/>
 
 </LinearLayout>

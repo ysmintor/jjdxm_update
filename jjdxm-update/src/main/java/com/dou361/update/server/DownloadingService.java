@@ -20,10 +20,10 @@ import android.widget.RemoteViews;
 
 import com.dou361.download.DownloadManager;
 import com.dou361.download.ParamsManager;
+import com.dou361.update.R;
 import com.dou361.update.UpdateHelper;
 import com.dou361.update.bean.Update;
 import com.dou361.update.type.UpdateType;
-import com.dou361.update.util.ResourceUtils;
 import com.dou361.update.util.UpdateConstants;
 import com.dou361.update.util.UpdateSP;
 import com.dou361.update.view.UpdateDialogActivity;
@@ -189,26 +189,26 @@ public class DownloadingService extends Service {
         if (layoutId > 0) {
             contentView = new RemoteViews(getPackageName(), layoutId);
         } else {
-            contentView = new RemoteViews(getPackageName(), ResourceUtils.getResourceIdByName(mContext, "layout", "jjdxm_download_notification"));
+            contentView = new RemoteViews(getPackageName(), R.layout.jjdxm_download_notification);
         }
-        contentView.setImageViewResource(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_iv_icon"), getApplicationInfo().icon);
-        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_title"), getString(getApplicationInfo().labelRes));
-        contentView.setProgressBar(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"), 100, 0, false);
-        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"), "0%");
+        contentView.setImageViewResource(R.id.jjdxm_update_iv_icon, getApplicationInfo().icon);
+        contentView.setTextViewText(R.id.jjdxm_update_title, getString(getApplicationInfo().labelRes));
+        contentView.setProgressBar(R.id.jjdxm_update_progress_bar, 100, 0, false);
+        contentView.setTextViewText(R.id.jjdxm_update_progress_text, "0%");
 
         /**暂停和开始*/
         Intent downIntent = new Intent(this, DownloadingService.class);
         downIntent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.PAUSE_DOWN);
         downIntent.putExtra("update", update);
         PendingIntent pendingIntent1 = PendingIntent.getService(this, UpdateConstants.PAUSE_DOWN, downIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        contentView.setOnClickPendingIntent(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_continue"), pendingIntent1);
+        contentView.setOnClickPendingIntent(R.id.jjdxm_update_rich_notification_continue, pendingIntent1);
 
         /**取消*/
         Intent cancelIntent = new Intent(this, DownloadingService.class);
         cancelIntent.putExtra(UpdateConstants.DATA_ACTION, UpdateConstants.CANCEL_DOWN);
         cancelIntent.putExtra("update", update);
         PendingIntent pendingIntent2 = PendingIntent.getService(this, UpdateConstants.CANCEL_DOWN, cancelIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        contentView.setOnClickPendingIntent(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_cancel"), pendingIntent2);
+        contentView.setOnClickPendingIntent(R.id.jjdxm_update_rich_notification_cancel, pendingIntent2);
 
         notification.contentView = contentView;
         notification.flags = Notification.FLAG_AUTO_CANCEL;
@@ -221,14 +221,14 @@ public class DownloadingService extends Service {
         if (opState == 0) {
             /**暂停*/
             if (contentView != null) {
-                contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_continue"), "开始");
+                contentView.setTextViewText(R.id.jjdxm_update_rich_notification_continue, "开始");
                 notification.contentView = contentView;
                 notificationManager.notify(UpdateConstants.NOTIFICATION_ACTION, notification);
             }
         } else if (opState == 1) {
             /**开始*/
             if (contentView != null) {
-                contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_rich_notification_continue"), "暂停");
+                contentView.setTextViewText(R.id.jjdxm_update_rich_notification_continue, "暂停");
                 notification.contentView = contentView;
                 notificationManager.notify(UpdateConstants.NOTIFICATION_ACTION, notification);
             }
@@ -245,8 +245,8 @@ public class DownloadingService extends Service {
      * 刷新下载进度
      */
     private void notifyNotification(long percent) {
-        contentView.setTextViewText(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_text"), percent + "%");
-        contentView.setProgressBar(ResourceUtils.getResourceIdByName(mContext, "id", "jjdxm_update_progress_bar"), 100, (int) percent, false);
+        contentView.setTextViewText(R.id.jjdxm_update_progress_text, percent + "%");
+        contentView.setProgressBar(R.id.jjdxm_update_progress_bar, 100, (int) percent, false);
         notification.contentView = contentView;
         notificationManager.notify(UpdateConstants.NOTIFICATION_ACTION, notification);
     }
